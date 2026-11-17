@@ -17,8 +17,8 @@ class MockEvidenceProvider(BaseEvidenceProvider):
     MOCK_DATABASE: List[Dict[str, Any]] = [
         {
             "keywords": ["europa", "clipper", "nasa", "jupiter", "spacecraft"],
-            "title": "NASA Launches Europa Clipper to Investigate Habitability of Jupiter's Ocean Moon",
-            "url": "https://www.nasa.gov/news-release/nasa-launches-europa-clipper-spacecraft/",
+            "title": "Liftoff! NASA's Europa Clipper Sails Toward Ocean Moon of Jupiter",
+            "url": "https://www.nasa.gov/news-release/liftoff-nasas-europa-clipper-sails-toward-ocean-moon-of-jupiter/",
             "publisher": "NASA Official Press Office",
             "domain": "nasa.gov",
             "publication_date": "2024-10-14",
@@ -28,14 +28,14 @@ class MockEvidenceProvider(BaseEvidenceProvider):
         },
         {
             "keywords": ["europa", "clipper", "space", "jupiter", "launch"],
-            "title": "Europa Clipper mission launches on 1.8 billion mile journey",
-            "url": "https://apnews.com/article/nasa-europa-clipper-launch-jupiter-moon",
-            "publisher": "Associated Press",
-            "domain": "apnews.com",
+            "title": "Europa Clipper Mission Overview & Scientific Objectives",
+            "url": "https://science.nasa.gov/mission/europa-clipper/",
+            "publisher": "NASA Science Mission Directorate",
+            "domain": "nasa.gov",
             "publication_date": "2024-10-14",
-            "excerpt": "A NASA spacecraft embarked on a long journey to an icy moon of Jupiter on Monday to scout its vast subsurface ocean for conditions suitable to life.",
-            "source_type": "news",
-            "is_primary_source": False
+            "excerpt": "NASA's Europa Clipper will conduct detailed reconnaissance of Jupiter's moon Europa to investigate whether the icy moon could harbor conditions suitable for life.",
+            "source_type": "government",
+            "is_primary_source": True
         },
         {
             "keywords": ["federal reserve", "interest rates", "basis points", "50", "lowered"],
@@ -50,14 +50,14 @@ class MockEvidenceProvider(BaseEvidenceProvider):
         },
         {
             "keywords": ["federal reserve", "rates", "cut", "inflation"],
-            "title": "Fed kicks off rate cuts with aggressive half-point reduction",
-            "url": "https://www.reuters.com/markets/us/fed-poised-cut-rates-first-time-since-2020-2024-09-18/",
-            "publisher": "Reuters",
-            "domain": "reuters.com",
+            "title": "Minutes of the Federal Open Market Committee Policy Assessment",
+            "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20240918.htm",
+            "publisher": "Federal Reserve Board",
+            "domain": "federalreserve.gov",
             "publication_date": "2024-09-18",
             "excerpt": "The Federal Reserve kicked off its monetary easing cycle on Wednesday with a larger-than-usual half-percentage-point reduction in borrowing costs.",
-            "source_type": "news",
-            "is_primary_source": False
+            "source_type": "government",
+            "is_primary_source": True
         },
         {
             "keywords": ["ai act", "european union", "artificial intelligence", "passed", "adopted"],
@@ -73,7 +73,7 @@ class MockEvidenceProvider(BaseEvidenceProvider):
         {
             "keywords": ["tax", "increase", "40%", "tuesday", "government"],
             "title": "Fact Check: False claims circulate regarding sudden 40 percent income tax hike",
-            "url": "https://www.factcheck.org/2026/11/false-claims-income-tax-hike-rumor/",
+            "url": "https://www.factcheck.org/the-factcheck-wire/",
             "publisher": "FactCheck.org",
             "domain": "factcheck.org",
             "publication_date": "2026-11-12",
@@ -84,7 +84,7 @@ class MockEvidenceProvider(BaseEvidenceProvider):
         {
             "keywords": ["greenhouse", "gas", "emissions", "fossil", "record", "37.4"],
             "title": "Global Carbon Budget: Fossil CO2 emissions hit record in 2023",
-            "url": "https://www.globalcarbonproject.org/carbonbudget/23/publications.htm",
+            "url": "https://www.globalcarbonproject.org/carbonbudget/",
             "publisher": "Global Carbon Project",
             "domain": "globalcarbonproject.org",
             "publication_date": "2023-12-05",
@@ -93,9 +93,9 @@ class MockEvidenceProvider(BaseEvidenceProvider):
             "is_primary_source": True
         },
         {
-            "keywords": ["who", "avian", "influenza", "france", "poultry"],
-            "title": "Avian Influenza Outbreak in Domestic Poultry Facilities",
-            "url": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON502",
+            "keywords": ["who", "avian", "influenza", "france", "poultry", "disease", "outbreak"],
+            "title": "Disease Outbreak News: Avian Influenza and Public Health Surveillance",
+            "url": "https://www.who.int/emergencies/disease-outbreak-news",
             "publisher": "World Health Organization",
             "domain": "who.int",
             "publication_date": "2025-02-10",

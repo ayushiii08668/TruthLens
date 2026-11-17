@@ -28,7 +28,7 @@ const PRESETS = [
     expectedVerdict: 'MULTI-CLAIM AUDIT',
     icon: Globe,
     color: 'text-brand-blue bg-blue-50 border-blue-200',
-    text: "https://apnews.com/article/nasa-europa-clipper-spacecraft-launch-2024"
+    text: "https://www.nasa.gov/news-release/liftoff-nasas-europa-clipper-sails-toward-ocean-moon-of-jupiter/"
   },
   {
     title: 'Multi-Claim Long-Form Article',
