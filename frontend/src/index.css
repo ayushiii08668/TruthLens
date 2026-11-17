@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F7F9FC;
+    color: #172B4D;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #172B4D;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Editorial subtle borders and layout classes */
+.editorial-border {
+  border: 1px solid #E5EAF2;
+}
+
+.editorial-card {
+  background: #FFFFFF;
+  border: 1px solid #E5EAF2;
+  box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.04);
+}
+
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  nav, footer, .no-print, button:not(.print-include) {
+    display: none !important;
+  }
+
+  .print-page-break {
+    page-break-before: always;
+  }
+}
+
