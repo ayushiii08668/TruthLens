@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Resolve production vs local API base URL
 const getBaseURL = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.BACKEND_URL;
   if (!envUrl) return '/api';
   return envUrl.endsWith('/api') ? envUrl : `${envUrl.replace(/\/$/, '')}/api`;
 };
