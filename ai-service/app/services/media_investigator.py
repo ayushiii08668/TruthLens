@@ -159,34 +159,78 @@ class MediaInvestigator:
         Investigates an uploaded image for text OCR, EXIF metadata,
         reverse-image discovery, and contextual integrity (recycling/miscaptioning).
         """
-        # 1. OCR and image metadata
-        image_data = ImageOCREngine.analyze_image(image_bytes, filename=filename, caption_hint=caption)
+        clean_caption = ""
+        if caption and not ImageOCREngine._is_filename_like(caption):
+            clean_caption = caption.strip()
+
+        # 1. OCR and image metadata using multimodal Vision AI & EXIF
+        image_data = await ImageOCREngine.async_analyze_image(
+            image_bytes,
+            filename=filename,
+            caption_hint=clean_caption
+        )
+
+        headline = (image_data.get("headline") or "").strip()
+        ocr_text = (image_data.get("ocr_text") or "").strip()
 
         # 2. Reverse Image Search Discovery
-        # Use filename, caption, and ocr text to guide archive search
-        query_hint = f"{filename} {caption} {image_data['ocr_text']}".strip()
+        # Guide archive discovery using headline, caption, or OCR text
+        query_parts = []
+        if headline:
+            query_parts.append(headline)
+        elif clean_caption:
+            query_parts.append(clean_caption)
+        elif ocr_text:
+            query_parts.append(ocr_text[:120])
+        else:
+            query_parts.append(filename)
+        query_hint = " ".join(query_parts).strip()
         reverse_result = await cls.reverse_provider.search(image_bytes, image_hash=query_hint)
 
         # 3. Contextual Evaluation (Authenticity, Manipulation, Origin, Recycling)
         context_eval = ImageContextAnalyzer.analyze_context(
             image_metadata=image_data,
             reverse_result=reverse_result,
-            user_caption=caption
+            user_caption=clean_caption
         )
 
         # 4. Verify extracted claims from image / caption
-        text_to_extract = f"{image_data['ocr_text']} {caption}".strip()
+        text_to_extract = (headline or clean_caption or ocr_text).strip()
         claims_to_verify = []
-        if text_to_extract:
+        limitations = []
+
+        if text_to_extract and not ImageOCREngine._is_filename_like(text_to_extract):
             extracted = await extract_claims_from_text(text_to_extract, max_claims=4)
             claims_to_verify = extracted.claims
 
+            # If rule-based segmentation filtered out short headline format, construct claim directly
+            if not claims_to_verify and len(text_to_extract.split()) >= 3:
+                from app.utils.claim_normalizer import normalize_claim
+                from app.models.schemas import ClaimItem
+                norm_claim, ctx = normalize_claim(text_to_extract)
+                claims_to_verify = [ClaimItem(
+                    original_text=text_to_extract,
+                    normalized_claim=norm_claim,
+                    category="sports" if any(w in text_to_extract.lower() for w in ("ipl", "csk", "dhoni", "cricket", "wickets", "siraj", "ashwin", "match")) else "general news",
+                    entities=image_data.get("entities", []),
+                    dates=image_data.get("dates", []),
+                    verifiable=True,
+                    relevant_context=ctx
+                )]
+
+        if not claims_to_verify:
+            if not text_to_extract or ImageOCREngine._is_filename_like(text_to_extract):
+                limitations.append(
+                    "No textual news headlines or factual claims could be extracted from this image. "
+                    "Please provide a headline or claim caption alongside the image to verify."
+                )
+
         verified_claims = []
 
-        for claim_item in claims_to_verify[:4]:
+        for claim_item in claims_to_verify[:1]:
             evidence_res = await search_evidence(
                 claim=claim_item.normalized_claim,
-                max_results=4,
+                max_results=3,
                 include_full_text=False
             )
             verified = await evaluate_claim(
@@ -214,7 +258,7 @@ class MediaInvestigator:
             origin=context_eval["origin"],
             context=ImageContextDetail(**context_eval["context"]),
             claims_verified=verified_claims,
-            limitations=[]
+            limitations=limitations
         )
 
 investigate_url = MediaInvestigator.investigate_url

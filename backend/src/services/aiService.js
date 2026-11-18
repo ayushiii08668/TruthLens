@@ -5,7 +5,7 @@ class AIService {
   constructor() {
     this.client = axios.create({
       baseURL: config.aiServiceUrl,
-      timeout: 35000,
+      timeout: 90000,
       headers: {
         'Content-Type': 'application/json',
         'X-Internal-Secret': config.aiServiceSecret

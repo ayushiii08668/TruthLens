@@ -1,14 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Search, 
-  Globe, 
-  FileText, 
-  Camera, 
-  UploadCloud, 
-  ArrowRight, 
-  Loader2, 
-  Info, 
-  X, 
+import {
+  Search,
+  Globe,
+  FileText,
+  Camera,
+  UploadCloud,
+  ArrowRight,
+  Loader2,
+  Info,
+  X,
   CheckCircle2,
   FileCheck
 } from 'lucide-react';
@@ -31,7 +31,7 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
     if (inputMode === 'image') {
       if (!imageFile) return;
       onSubmit({
-        originalInput: caption.trim() || imageFile.name,
+        originalInput: caption.trim() || '',
         inputType: 'image',
         imageFile,
         caption: caption.trim()
@@ -138,11 +138,10 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setInputMode('headline')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              inputMode === 'headline'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'headline'
                 ? 'bg-surface text-brand-blue shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Search className="w-3.5 h-3.5" />
             <span>Headline / Claim</span>
@@ -151,11 +150,10 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setInputMode('text')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              inputMode === 'text'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'text'
                 ? 'bg-surface text-brand-blue shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Article Text</span>
@@ -164,11 +162,10 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setInputMode('url')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              inputMode === 'url'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'url'
                 ? 'bg-surface text-brand-blue shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Globe className="w-3.5 h-3.5" />
             <span>Article URL</span>
@@ -177,11 +174,10 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
           <button
             type="button"
             onClick={() => setInputMode('image')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              inputMode === 'image'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'image'
                 ? 'bg-surface text-brand-orange shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             <Camera className="w-3.5 h-3.5" />
             <span>Image Forensics</span>
@@ -214,11 +210,10 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
-                  dragActive
+                className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${dragActive
                     ? 'border-brand-orange bg-orange-50/50'
                     : 'border-slate-border hover:border-slate-400 bg-canvas/30'
-                }`}
+                  }`}
               >
                 <input
                   ref={fileInputRef}
@@ -278,16 +273,24 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
 
             {/* Accompanying Caption / Claim Input */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Accompanying Claim or Caption (Optional / Recommended)
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Accompanying News Headline or Claim (Optional / Auto-Extracted)
+                </label>
+                <span className="text-[11px] text-brand-blue font-semibold">
+                  Vision AI scans overlay text
+                </span>
+              </div>
               <input
                 type="text"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                placeholder="e.g. Breaking: Factory explosion destroys chemical facility today..."
+                placeholder="Leave blank to auto-detect text from image, or enter headline (e.g. Dhoni Retirement Buzz | IPL 2025)..."
                 className="w-full p-3 text-sm bg-canvas/40 border border-slate-border rounded-xl focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange text-slate-main placeholder-slate-400"
               />
+              <p className="text-[11px] text-slate-500 mt-1">
+                TruthLens Vision OCR automatically transcribes overlay headlines, breaking news banners, and graphic text.
+              </p>
             </div>
           </div>
         ) : (
@@ -319,8 +322,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
               {inputMode === 'url'
                 ? 'Safe crawler with strict SSRF defense, redirect re-validation, and robots.txt compliance.'
                 : inputMode === 'image'
-                ? 'Distinguishes authenticity, manipulation, origin discovery, and recycled miscaptioning.'
-                : 'Dual search over Google Fact Check Tools API and primary web wire archives.'}
+                  ? 'Distinguishes authenticity, manipulation, origin discovery, and recycled miscaptioning.'
+                  : 'Dual search over Google Fact Check Tools API and primary web wire archives.'}
             </span>
           </div>
 
@@ -331,11 +334,10 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
               (inputMode === 'image' && !imageFile) ||
               (inputMode !== 'image' && inputText.trim().length < 5)
             }
-            className={`w-full sm:w-auto px-6 py-3 disabled:opacity-50 text-white font-heading font-extrabold text-sm rounded-xl transition-all shadow-editorial flex items-center justify-center gap-2 shrink-0 ${
-              inputMode === 'image'
+            className={`w-full sm:w-auto px-6 py-3 disabled:opacity-50 text-white font-heading font-extrabold text-sm rounded-xl transition-all shadow-editorial flex items-center justify-center gap-2 shrink-0 ${inputMode === 'image'
                 ? 'bg-brand-orange hover:bg-orange-600'
                 : 'bg-brand-blue hover:bg-blue-700'
-            }`}
+              }`}
           >
             {isLoading ? (
               <>

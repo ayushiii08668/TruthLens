@@ -197,3 +197,4 @@ docker compose up --build -d
 - [x] **Authorization Checks:** User B cannot view, save, or edit User A's private dossiers (`403 Forbidden`).
 - [x] **Opt-In Public Sharing:** Anonymous, sanitized public endpoint exposing evidence without personal user details.
 - [x] **Light-Theme UI:** 100% compliant bright editorial light theme (`#F7F9FC` canvas, `#FFFFFF` cards, `#2457D6` royal blue, `#12A88A` teal).
+

@@ -72,7 +72,9 @@ const generateTimeline = (createdAt = new Date()) => {
 const createInvestigation = async (req, res, next) => {
   let investigation;
   try {
-    const originalInput = req.body.originalInput || req.body.caption || (req.file ? req.file.originalname : 'Media content');
+    const userCaption = (req.body.caption || '').trim();
+    const isFilenameLike = (str) => /^[\w\-.\s()]+\.(jpg|jpeg|png|webp|gif|bmp|tiff)$/i.test((str || '').trim());
+    let originalInput = req.body.originalInput || userCaption || (req.file ? req.file.originalname : 'Media content');
     const inputType = req.body.inputType || (req.file ? 'image' : 'text');
     let metadata = {};
 
@@ -106,10 +108,12 @@ const createInvestigation = async (req, res, next) => {
           limitations: aiPipelineResult.limitations
         };
       } else if (inputType === 'image' && req.file) {
+        // Do NOT pass a filename like "Test.jpg" as a caption to the AI verification service
+        const safeCaption = userCaption || (!isFilenameLike(originalInput) ? originalInput : '');
         aiPipelineResult = await aiService.investigateImage(
           req.file.buffer,
           req.file.originalname,
-          req.body.caption || originalInput
+          safeCaption
         );
         metadata = {
           imageAnalysis: {
@@ -130,6 +134,11 @@ const createInvestigation = async (req, res, next) => {
             context: aiPipelineResult.context
           }
         };
+        // If image OCR or headline was extracted and no manual caption was given, update originalInput
+        if (aiPipelineResult.ocr_text && isFilenameLike(originalInput)) {
+          originalInput = aiPipelineResult.ocr_text;
+          investigation.originalInput = originalInput;
+        }
       } else if (inputType === 'text' && (originalInput.length > 250 || req.body.isArticle)) {
         aiPipelineResult = await aiService.investigateArticle(originalInput, req.body.title || null);
         metadata = {
@@ -217,7 +226,7 @@ const createInvestigation = async (req, res, next) => {
 
     investigation.extractedClaims = extractedClaimTexts.length > 0 
       ? extractedClaimTexts 
-      : [originalInput.trim()];
+      : (!isFilenameLike(originalInput) ? [originalInput.trim()] : []);
     investigation.metadata = metadata;
 
     // 4. Save Verification Reports in MongoDB
@@ -241,6 +250,27 @@ const createInvestigation = async (req, res, next) => {
       isPublic: false,
       timeline: generateTimeline(investigation.createdAt)
     }));
+
+    if (reportDocuments.length === 0 && inputType === 'image') {
+      const limitationMsg = (aiPipelineResult.limitations && aiPipelineResult.limitations[0]) 
+        || 'No verifiable text headline or news claim was identified in the uploaded image. Please enter a headline caption to verify.';
+      reportDocuments.push({
+        investigationId: investigation._id,
+        userId: req.user._id,
+        claim: originalInput || 'Uploaded Image',
+        verdict: 'UNVERIFIED',
+        confidence: 0,
+        evidenceSufficiency: 'Insufficient',
+        explanation: limitationMsg,
+        supportingEvidence: [],
+        contradictingEvidence: [],
+        neutralEvidence: [],
+        sources: [],
+        limitations: [limitationMsg],
+        isPublic: false,
+        timeline: generateTimeline(investigation.createdAt)
+      });
+    }
 
     const createdReports = reportDocuments.length > 0 
       ? await VerificationReport.insertMany(reportDocuments)

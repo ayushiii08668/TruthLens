@@ -132,6 +132,12 @@ class ClaimClassifier:
             if re.search(pattern, text_lower):
                 return "SUBJECTIVE_STATEMENT", False
 
+        # Check for Filenames / File Metadata (e.g. Test.jpg, image.png, DSC_001.JPG)
+        if re.search(r"\b[\w\-.]+\.(jpg|jpeg|png|webp|gif|bmp|tiff|pdf|mp4|mov|exe|zip)\b", text_lower):
+            words = [w for w in re.findall(r"\b[a-zA-Z]{2,}\b", text_lower) if w not in ('jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp')]
+            if len(words) < 4:
+                return "IRRELEVANT_METADATA", False
+
         # If it contains verifiable markers (numbers, past/present declarative verbs, specific entities)
         # and doesn't match subjective patterns, it qualifies as a factual claim
         return "FACTUAL_CLAIM", True

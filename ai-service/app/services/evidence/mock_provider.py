@@ -102,6 +102,72 @@ class MockEvidenceProvider(BaseEvidenceProvider):
             "excerpt": "The Ministry of Agriculture in France confirmed an outbreak of high pathogenicity avian influenza in commercial poultry flocks.",
             "source_type": "government",
             "is_primary_source": True
+        },
+        {
+            "keywords": ["pattinson", "bond", "craig", "daniel craig", "robert pattinson", "james bond", "007", "7th", "taking over"],
+            "title": "Amazon MGM Studios announces Robert Pattinson as 7th James Bond",
+            "url": "https://www.reuters.com/lifestyle/entertainment/robert-pattinson-cast-as-seventh-james-bond-amazon-mgm-2026/",
+            "publisher": "Reuters International Syndicate",
+            "domain": "reuters.com",
+            "publication_date": "2026-11-17",
+            "excerpt": "Amazon MGM Studios and EON Productions have officially announced that British actor Robert Pattinson will star as the 7th James Bond, taking over the iconic 007 role from Daniel Craig.",
+            "source_type": "news",
+            "is_primary_source": True
+        },
+        {
+            "keywords": ["pattinson", "bond", "craig", "daniel craig", "robert pattinson", "james bond", "007", "7th", "taking over"],
+            "title": "Robert Pattinson confirmed as 7th James Bond taking over from Daniel Craig",
+            "url": "https://www.theguardian.com/film/robert-pattinson-james-bond-daniel-craig",
+            "publisher": "The Guardian",
+            "domain": "theguardian.com",
+            "publication_date": "2026-11-17",
+            "excerpt": "Robert Pattinson has been named the next James Bond, succeeding Daniel Craig. Amazon MGM Studios confirmed the casting for the upcoming 007 installment.",
+            "source_type": "news",
+            "is_primary_source": False
+        },
+        {
+            "keywords": ["pattinson", "bond", "craig", "daniel craig", "robert pattinson", "james bond", "007", "7th", "taking over"],
+            "title": "EON Productions: Official Announcement of the 7th James Bond",
+            "url": "https://www.007.com/news/casting-announcement-the-next-james-bond/",
+            "publisher": "EON Productions Official",
+            "domain": "007.com",
+            "publication_date": "2026-11-17",
+            "excerpt": "Official press communique: British actor Robert Pattinson has been named the seventh actor to portray secret agent James Bond 007, succeeding Daniel Craig.",
+            "source_type": "news",
+            "is_primary_source": True
+        },
+        {
+            "keywords": ["dow", "jones", "dow jones", "nvidia", "1600", "points", "sessions", "futures", "rebound", "results"],
+            "title": "Dow drops 1,600 points over two sessions before stock futures rebound on Nvidia earnings",
+            "url": "https://www.cnbc.com/markets/dow-jones-drops-nvidia-earnings-rebound-2026",
+            "publisher": "CNBC Markets",
+            "domain": "cnbc.com",
+            "publication_date": "2026-11-18",
+            "excerpt": "The Dow Jones Industrial Average dropped approximately 1,600 points across two consecutive trading sessions, but equity index futures rebounded sharply in extended trading after Nvidia reported blockbuster quarterly results.",
+            "source_type": "news",
+            "is_primary_source": True
+        },
+        {
+            "keywords": ["dow", "jones", "dow jones", "nvidia", "1600", "points", "sessions", "futures", "rebound", "results"],
+            "title": "Stock market today: Dow sinks 850 points following prior day slide, futures rally on Nvidia beat",
+            "url": "https://finance.yahoo.com/news/stock-market-dow-plunges-nvidia-futures-rally",
+            "publisher": "Yahoo Finance",
+            "domain": "finance.yahoo.com",
+            "publication_date": "2026-11-18",
+            "excerpt": "Following an 800-point decline earlier this week, the Dow Jones sank an additional 850 points bringing two-session losses to over 1,600 points, while futures rebounded after Nvidia earnings surpassed analyst projections.",
+            "source_type": "news",
+            "is_primary_source": False
+        },
+        {
+            "keywords": ["dow", "jones", "dow jones", "nvidia", "1600", "points", "sessions", "futures", "rebound", "results"],
+            "title": "Nvidia Earnings Lift Futures After Steep Two-Day Market Selloff",
+            "url": "https://www.bloomberg.com/news/articles/2026-11-18/nvidia-earnings-lift-futures-after-two-day-dow-slump",
+            "publisher": "Bloomberg Markets Syndicate",
+            "domain": "bloomberg.com",
+            "publication_date": "2026-11-18",
+            "excerpt": "U.S. stock index futures rebounded overnight after semiconductor leader Nvidia reported revenue gains, arresting a two-day slump that erased more than 1,600 points from the Dow Jones Industrial Average.",
+            "source_type": "news",
+            "is_primary_source": True
         }
     ]
 

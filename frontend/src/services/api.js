@@ -13,7 +13,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 45000, // 45 seconds to accommodate comprehensive AI pipeline & web discovery
+  timeout: 90000, // 90 seconds for thorough AI multimodal & wire discovery
 });
 
 // Request interceptor to attach JWT token
@@ -32,9 +32,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    // Extract server error message or fallback
+    // Extract server error message or fallback safely without [object Object]
+    const serverErr = error.response?.data?.error;
     const message =
-      error.response?.data?.error ||
+      (typeof serverErr === 'string' ? serverErr : serverErr?.message) ||
       error.response?.data?.message ||
       error.message ||
       'An unexpected error occurred';

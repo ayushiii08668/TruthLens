@@ -92,7 +92,7 @@ class EvidenceDiscoveryEngine:
         processed_items: List[ProcessedEvidenceItem] = []
         syndication_seen = False
 
-        for entry in grouped_results[:max_results]:
+        for entry in grouped_results:
             item: RawEvidenceSnippet = entry["item"]
             syndication_group = entry["syndication_group"]
             is_syndicated_duplicate = entry["is_syndicated_duplicate"]
@@ -143,14 +143,29 @@ class EvidenceDiscoveryEngine:
             )
             processed_items.append(processed)
 
+        # Sort by relevance score descending so the most pertinent and authoritative evidence is prioritized
+        processed_items.sort(
+            key=lambda x: (x.relevance_score, 1 if x.is_primary_source else 0),
+            reverse=True
+        )
+
+        # Only retain evidence snippets that have meaningful factual overlap (relevance >= 0.20)
+        meaningful_items = [item for item in processed_items if item.relevance_score >= 0.20]
+        ranked_items = meaningful_items[:max_results]
+
+        if not ranked_items:
+            no_docs_msg = "No authoritative source documents found matching claim criteria."
+            if no_docs_msg not in limitations:
+                limitations.append(no_docs_msg)
+
         if syndication_seen:
             limitations.append("Wire syndication detected: identical wire articles grouped to avoid duplicate weight.")
 
         elapsed_ms = int((time.time() - start_time) * 1000)
         return EvidenceSearchResponse(
             claim=claim,
-            evidence=processed_items,
-            search_status="completed" if processed_items else "no_results",
+            evidence=ranked_items,
+            search_status="completed" if ranked_items else "no_results",
             queries_used=queries,
             limitations=limitations,
             retrieval_time_ms=elapsed_ms

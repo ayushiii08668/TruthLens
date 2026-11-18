@@ -66,6 +66,24 @@ const PRESETS = [
     icon: History,
     color: 'text-amber-600 bg-amber-50 border-amber-200',
     text: "The federal corporate income tax rate in the United States is currently 35% on all corporate profits."
+  },
+  {
+    title: 'Robert Pattinson as 7th James Bond',
+    category: 'Entertainment / Culture',
+    inputType: 'headline',
+    expectedVerdict: 'SUPPORTED',
+    icon: CheckCircle,
+    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+    text: "Robert Pattinson is named the 7th James Bond, taking over the role from Daniel Craig."
+  },
+  {
+    title: 'Dow Jones & Nvidia Market Rebound',
+    category: 'Finance / Markets',
+    inputType: 'headline',
+    expectedVerdict: 'SUPPORTED',
+    icon: CheckCircle,
+    color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+    text: "Dow Jones falls 1,600 points in two sessions, but futures rebound after Nvidia results."
   }
 ];
 
