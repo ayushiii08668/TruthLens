@@ -14,6 +14,19 @@ from app.utils.temporal_extractor import TemporalNumericalExtractor
 
 logger = logging.getLogger("truthlens.image.ocr")
 
+_RAPID_OCR_INSTANCE = None
+
+def get_rapid_ocr_engine():
+    global _RAPID_OCR_INSTANCE
+    if _RAPID_OCR_INSTANCE is None:
+        try:
+            from rapidocr_onnxruntime import RapidOCR
+            _RAPID_OCR_INSTANCE = RapidOCR()
+            logger.info("RapidOCR ONNX Runtime engine initialized as singleton")
+        except Exception as e:
+            logger.warning("Failed to initialize RapidOCR singleton: %s", type(e).__name__)
+    return _RAPID_OCR_INSTANCE
+
 class ImageOCREngine:
     FILENAME_REGEX = re.compile(
         r"^[\w\-.\s()]+\.(jpg|jpeg|png|webp|gif|bmp|tiff|pdf|mp4|mov)$",
@@ -37,15 +50,27 @@ class ImageOCREngine:
         """
         Executes RapidOCR (ONNX Runtime, local, zero-network, high-accuracy)
         to transcribe overlay headlines, tickers, banners, and text.
+        Downscales high-resolution inputs to max 1024px for sub-second CPU inference.
         """
         try:
-            from rapidocr_onnxruntime import RapidOCR
+            engine = get_rapid_ocr_engine()
+            if not engine:
+                return {"headline": "", "all_text": "", "entities": []}
+
             import numpy as np
 
-            engine = RapidOCR()
             img = Image.open(io.BytesIO(image_bytes))
             if img.mode != "RGB":
                 img = img.convert("RGB")
+
+            # Downscale large images (e.g., 4000x3000 phone captures) to max 1024px for speed
+            max_dim = 1024
+            if max(img.width, img.height) > max_dim:
+                scale = max_dim / float(max(img.width, img.height))
+                new_w = max(1, int(img.width * scale))
+                new_h = max(1, int(img.height * scale))
+                img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
             img_np = np.array(img)
             result, _ = engine(img_np)
 
@@ -118,7 +143,7 @@ class ImageOCREngine:
                     '  "entities": ["names", "organizations", "dates"]\n'
                     "}"
                 )
-                async with httpx.AsyncClient(timeout=14.0) as client:
+                async with httpx.AsyncClient(timeout=6.0) as client:
                     res = await client.post(
                         "https://api.openai.com/v1/chat/completions",
                         headers={
@@ -174,7 +199,7 @@ class ImageOCREngine:
                     '{"headline": "main news headline", "all_text": "full text", "entities": ["entity1"]}'
                 )
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={settings.gemini_api_key}"
-                async with httpx.AsyncClient(timeout=14.0) as client:
+                async with httpx.AsyncClient(timeout=6.0) as client:
                     res = await client.post(
                         url,
                         headers={"Content-Type": "application/json"},

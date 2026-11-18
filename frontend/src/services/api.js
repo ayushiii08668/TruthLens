@@ -13,7 +13,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 90000, // 90 seconds for thorough AI multimodal & wire discovery
+  timeout: 120000, // 120 seconds buffer for cloud cold-starts and deep multimodal wire discovery
 });
 
 // Request interceptor to attach JWT token
@@ -42,6 +42,12 @@ api.interceptors.response.use(
     if (error.code === 'ERR_NETWORK') {
       return Promise.reject(new Error(
         'Cannot connect to backend server. Please verify your Render service is running and VITE_API_URL is configured correctly.'
+      ));
+    }
+
+    if (error.code === 'ECONNABORTED' || (error.message && error.message.toLowerCase().includes('timeout'))) {
+      return Promise.reject(new Error(
+        'Verification timed out. Render free tier may be cold-starting the Python AI container (~30s). Please try your verification again now that the container is awake!'
       ));
     }
 

@@ -57,7 +57,7 @@ class EvidenceDiscoveryEngine:
         if not active_providers or self.mock_provider.is_available:
             active_providers.append(self.mock_provider)
 
-        # 3. Execute searches concurrently
+        # 3. Execute searches concurrently with a hard deadline to prevent cloud timeout
         raw_snippets: List[RawEvidenceSnippet] = []
 
         async def run_query(provider, q):
@@ -67,8 +67,13 @@ class EvidenceDiscoveryEngine:
                 logger.warning("Provider %s failed for query %s: %s", provider.provider_name, q, type(e).__name__)
                 return []
 
-        tasks = [run_query(provider, q) for provider in active_providers for q in queries]
-        results_lists = await asyncio.gather(*tasks, return_exceptions=True)
+        active_queries = queries[:3]
+        tasks = [run_query(provider, q) for provider in active_providers for q in active_queries]
+        try:
+            results_lists = await asyncio.wait_for(asyncio.gather(*tasks, return_exceptions=True), timeout=6.0)
+        except asyncio.TimeoutError:
+            logger.warning("Evidence search exceeded 6.0s deadline; proceeding with available snippets")
+            results_lists = []
 
         for res in results_lists:
             if isinstance(res, list):

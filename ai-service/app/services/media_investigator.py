@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional, List, Dict, Any
 
@@ -43,21 +44,30 @@ class MediaInvestigator:
 
         # Extract claims from article text
         extracted = await extract_claims_from_text(article["text"], max_claims=max_claims)
-        verified_claims = []
+        
+        async def verify_single_claim(claim_item):
+            try:
+                evidence_res = await asyncio.wait_for(
+                    search_evidence(
+                        claim=claim_item.normalized_claim,
+                        max_results=3,
+                        include_full_text=False
+                    ),
+                    timeout=6.0
+                )
+                evidence_list = evidence_res.evidence
+            except Exception as e:
+                logger.warning("Claim search timed out or failed: %s", type(e).__name__)
+                evidence_list = []
 
-        for claim_item in extracted.claims:
-            evidence_res = await search_evidence(
+            return await evaluate_claim(
                 claim=claim_item.normalized_claim,
-                max_results=4,
-                include_full_text=False
-            )
-            verified = await evaluate_claim(
-                claim=claim_item.normalized_claim,
-                evidence=evidence_res.evidence,
+                evidence=evidence_list,
                 is_opinion_or_prediction=not claim_item.verifiable,
                 statement_type="FACTUAL_CLAIM" if claim_item.verifiable else "OPINION"
             )
-            verified_claims.append(verified)
+
+        verified_claims = list(await asyncio.gather(*[verify_single_claim(c) for c in extracted.claims[:4]]))
 
         # Synthesize Article Summary
         verdicts = [v.verdict for v in verified_claims]
@@ -104,21 +114,30 @@ class MediaInvestigator:
         Evaluates claims separately and highlights missing context without giving a blanket verdict.
         """
         extracted = await extract_claims_from_text(text, max_claims=max_claims)
-        verified_claims = []
 
-        for claim_item in extracted.claims:
-            evidence_res = await search_evidence(
+        async def verify_single_claim(claim_item):
+            try:
+                evidence_res = await asyncio.wait_for(
+                    search_evidence(
+                        claim=claim_item.normalized_claim,
+                        max_results=3,
+                        include_full_text=False
+                    ),
+                    timeout=6.0
+                )
+                evidence_list = evidence_res.evidence
+            except Exception as e:
+                logger.warning("Article claim search timed out or failed: %s", type(e).__name__)
+                evidence_list = []
+
+            return await evaluate_claim(
                 claim=claim_item.normalized_claim,
-                max_results=4,
-                include_full_text=False
-            )
-            verified = await evaluate_claim(
-                claim=claim_item.normalized_claim,
-                evidence=evidence_res.evidence,
+                evidence=evidence_list,
                 is_opinion_or_prediction=not claim_item.verifiable,
                 statement_type="FACTUAL_CLAIM" if claim_item.verifiable else "OPINION"
             )
-            verified_claims.append(verified)
+
+        verified_claims = list(await asyncio.gather(*[verify_single_claim(c) for c in extracted.claims[:4]]))
 
         # Identify missing context across claims
         missing_context = []
@@ -228,14 +247,23 @@ class MediaInvestigator:
         verified_claims = []
 
         for claim_item in claims_to_verify[:1]:
-            evidence_res = await search_evidence(
-                claim=claim_item.normalized_claim,
-                max_results=3,
-                include_full_text=False
-            )
+            try:
+                evidence_res = await asyncio.wait_for(
+                    search_evidence(
+                        claim=claim_item.normalized_claim,
+                        max_results=3,
+                        include_full_text=False
+                    ),
+                    timeout=6.0
+                )
+                evidence_list = evidence_res.evidence
+            except Exception as e:
+                logger.warning("Image claim search timed out or failed: %s", type(e).__name__)
+                evidence_list = []
+
             verified = await evaluate_claim(
                 claim=claim_item.normalized_claim,
-                evidence=evidence_res.evidence,
+                evidence=evidence_list,
                 is_opinion_or_prediction=not claim_item.verifiable,
                 statement_type="FACTUAL_CLAIM" if claim_item.verifiable else "OPINION"
             )

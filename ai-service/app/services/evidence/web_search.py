@@ -88,7 +88,7 @@ class GeneralWebSearchProvider(BaseEvidenceProvider):
         if not results:
             try:
                 rss_url = f"https://news.google.com/rss/search?q={quote_plus(query)}&hl=en-US&gl=US&ceid=US:en"
-                async with httpx.AsyncClient(timeout=4.5, follow_redirects=True) as client:
+                async with httpx.AsyncClient(timeout=2.5, follow_redirects=True) as client:
                     headers = {
                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 TruthLens/1.0"
                     }

@@ -87,16 +87,56 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
       alert('Only JPG, JPEG, PNG, and WebP images are supported.');
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image file size cannot exceed 10MB.');
+    if (file.size > 20 * 1024 * 1024) {
+      alert('Image file size cannot exceed 20MB.');
       return;
     }
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result);
+
+    // Client-side auto-optimization: downscale high-res mobile photos to max 1200px for instant cloud upload & inference
+    const img = new window.Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const maxDim = 1200;
+      let { width, height } = img;
+      
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const optimizedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+            type: 'image/jpeg',
+            lastModified: Date.now()
+          });
+          setImageFile(optimizedFile);
+          setImagePreview(canvas.toDataURL('image/jpeg', 0.88));
+        } else {
+          setImageFile(file);
+          setImagePreview(canvas.toDataURL());
+        }
+      }, 'image/jpeg', 0.88);
     };
-    reader.readAsDataURL(file);
+    img.onerror = () => {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => setImagePreview(e.target?.result);
+      reader.readAsDataURL(file);
+    };
+    img.src = objectUrl;
   };
 
   const handleDrag = (e) => {

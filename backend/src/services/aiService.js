@@ -5,7 +5,7 @@ class AIService {
   constructor() {
     this.client = axios.create({
       baseURL: config.aiServiceUrl,
-      timeout: 90000,
+      timeout: 35000, // 35s ceiling ensures backend handles timeouts with database fallbacks before frontend/gateway limits
       headers: {
         'Content-Type': 'application/json',
         'X-Internal-Secret': config.aiServiceSecret
