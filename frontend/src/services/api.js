@@ -32,6 +32,19 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Helpful diagnostic if Vercel static host receives API call due to missing VITE_API_URL
+    if (error.response?.status === 405) {
+      return Promise.reject(new Error(
+        'Backend service not connected (HTTP 405). Please configure VITE_API_URL in your Vercel Project Settings with your deployed Render backend URL, then redeploy.'
+      ));
+    }
+
+    if (error.code === 'ERR_NETWORK') {
+      return Promise.reject(new Error(
+        'Cannot connect to backend server. Please verify your Render service is running and VITE_API_URL is configured correctly.'
+      ));
+    }
+
     // Extract server error message or fallback safely without [object Object]
     const serverErr = error.response?.data?.error;
     const message =
