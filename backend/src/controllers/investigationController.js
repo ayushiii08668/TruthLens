@@ -311,13 +311,13 @@ const createInvestigation = async (req, res, next) => {
       timeline: generateTimeline(investigation.createdAt)
     }));
 
-    if (reportDocuments.length === 0 && inputType === 'image') {
-      const limitationMsg = (aiPipelineResult.limitations && aiPipelineResult.limitations[0]) 
-        || 'No verifiable text headline or news claim was identified in the uploaded image. Please enter a headline caption to verify.';
+    if (reportDocuments.length === 0) {
+      const limitationMsg = (aiPipelineResult && aiPipelineResult.limitations && aiPipelineResult.limitations[0]) 
+        || 'No verifiable text headline or claim assertion was identified. Please provide a clear headline or claim to verify.';
       reportDocuments.push({
         investigationId: investigation._id,
         userId: req.user._id,
-        claim: originalInput || 'Uploaded Image',
+        claim: (!isFilenameLike(originalInput) ? originalInput.trim() : 'Media Claim Assertion') || 'Uploaded Media',
         verdict: 'UNVERIFIED',
         confidence: 0,
         evidenceSufficiency: 'Insufficient',
@@ -332,9 +332,7 @@ const createInvestigation = async (req, res, next) => {
       });
     }
 
-    const createdReports = reportDocuments.length > 0 
-      ? await VerificationReport.insertMany(reportDocuments)
-      : [];
+    const createdReports = await VerificationReport.insertMany(reportDocuments);
 
     // 5. Update Investigation to Completed
     investigation.status = 'completed';
