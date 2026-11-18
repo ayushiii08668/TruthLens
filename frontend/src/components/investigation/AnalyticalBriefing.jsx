@@ -16,16 +16,16 @@ export default function AnalyticalBriefing({ explanation = '', limitations = [] 
   ];
 
   return (
-    <div className="bg-surface rounded-xl border border-slate-border p-5 sm:p-6 shadow-subtle space-y-4">
+    <div className="bg-surface rounded-xl border border-slate-border p-4 sm:p-6 shadow-subtle space-y-4">
       <div className="flex items-center gap-2 pb-3 border-b border-slate-border">
-        <Scale className="w-5 h-5 text-brand-blue" />
+        <Scale className="w-5 h-5 text-brand-blue shrink-0" />
         <h3 className="font-heading font-extrabold text-base text-slate-main">
           Analytical Assessment &amp; Reasoning
         </h3>
       </div>
 
       {/* Main Formatted Explanation */}
-      <div className="prose prose-sm max-w-none text-slate-700 leading-relaxed text-sm whitespace-pre-line">
+      <div className="prose prose-sm max-w-none text-slate-700 leading-relaxed text-sm whitespace-pre-line break-words">
         {explanation || 'No formal analytical brief was provided for this assessment.'}
       </div>
 

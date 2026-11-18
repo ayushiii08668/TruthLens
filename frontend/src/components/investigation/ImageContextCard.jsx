@@ -35,23 +35,23 @@ export default function ImageContextCard({ imageAnalysis }) {
   const contextVerdict = context?.verdict || 'UNSPECIFIED';
 
   return (
-    <div className="bg-surface rounded-2xl border border-slate-border p-6 shadow-editorial space-y-6 mb-6">
+    <div className="bg-surface rounded-2xl border border-slate-border p-4 sm:p-6 shadow-editorial space-y-6 mb-6">
       {/* Media Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-border gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-orange-50 text-brand-orange flex items-center justify-center border border-orange-100">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-orange-50 text-brand-orange flex items-center justify-center border border-orange-100 shrink-0">
             <Camera className="w-5 h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-orange bg-orange-50 px-2 py-0.5 rounded border border-orange-100">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-orange bg-orange-50 px-2 py-0.5 rounded border border-orange-100 shrink-0">
                 Media Forensics &amp; Provenance
               </span>
-              <span className="text-xs font-mono font-semibold text-slate-500">
+              <span className="text-xs font-mono font-semibold text-slate-500 truncate max-w-[180px] sm:max-w-[240px]">
                 {filename}
               </span>
             </div>
-            <h3 className="font-heading font-extrabold text-lg text-slate-main mt-0.5">
+            <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-main mt-0.5 break-words">
               Image Context &amp; Reverse-Search Audit
             </h3>
           </div>

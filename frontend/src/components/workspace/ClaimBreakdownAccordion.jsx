@@ -92,48 +92,48 @@ export default function ClaimBreakdownAccordion({
               <button
                 type="button"
                 onClick={() => handleToggle(idx)}
-                className="w-full p-4 sm:p-5 flex items-start justify-between text-left gap-4 select-none focus:outline-none"
+                className="w-full p-3.5 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between text-left gap-3 sm:gap-4 select-none focus:outline-none"
               >
                 <div className="space-y-2 flex-1 min-w-0">
                   {/* Meta Pills */}
-                  <div className="flex items-center gap-2 flex-wrap text-xs">
-                    <span className="font-mono font-bold text-[11px] px-2 py-0.5 rounded bg-blue-50 text-brand-blue border border-blue-100">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-xs">
+                    <span className="font-mono font-bold text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-blue-50 text-brand-blue border border-blue-100">
                       Assertion #{idx + 1}
                     </span>
-                    <span className="font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px]">
+                    <span className="font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] sm:text-[11px]">
                       {category}
                     </span>
                     {verifiability && (
-                      <span className="font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[11px] border border-emerald-100">
+                      <span className="font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[10px] sm:text-[11px] border border-emerald-100">
                         {verifiability}
                       </span>
                     )}
                   </div>
 
                   {/* Assertion Text */}
-                  <h4 className="font-heading font-extrabold text-sm sm:text-base text-slate-main tracking-tight leading-snug">
+                  <h4 className="font-heading font-extrabold text-sm sm:text-base text-slate-main tracking-tight leading-snug break-words">
                     {claimText}
                   </h4>
 
                   {/* Entities & Context chips */}
                   {(entities.length > 0 || dates.length > 0 || locations.length > 0) && (
-                    <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-500 pt-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-[11px] text-slate-500 pt-1">
                       {entities.slice(0, 3).map((ent, eIdx) => (
-                        <span key={`ent-${eIdx}`} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded">
-                          <Users className="w-2.5 h-2.5 text-slate-400" />
-                          <span>{ent}</span>
+                        <span key={`ent-${eIdx}`} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded truncate max-w-[150px]">
+                          <Users className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                          <span className="truncate">{ent}</span>
                         </span>
                       ))}
                       {dates.slice(0, 2).map((d, dIdx) => (
-                        <span key={`d-${dIdx}`} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded">
-                          <Calendar className="w-2.5 h-2.5 text-slate-400" />
-                          <span>{d}</span>
+                        <span key={`d-${dIdx}`} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded truncate max-w-[150px]">
+                          <Calendar className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                          <span className="truncate">{d}</span>
                         </span>
                       ))}
                       {locations.slice(0, 2).map((loc, lIdx) => (
-                        <span key={`loc-${lIdx}`} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded">
-                          <MapPin className="w-2.5 h-2.5 text-slate-400" />
-                          <span>{loc}</span>
+                        <span key={`loc-${lIdx}`} className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200/70 px-1.5 py-0.5 rounded truncate max-w-[150px]">
+                          <MapPin className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                          <span className="truncate">{loc}</span>
                         </span>
                       ))}
                     </div>
@@ -141,7 +141,7 @@ export default function ClaimBreakdownAccordion({
                 </div>
 
                 {/* Right side: Verdict Badge & Toggle Arrow */}
-                <div className="flex items-center gap-3 shrink-0 pt-1">
+                <div className="flex items-center justify-between w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                   {report?.verdict ? (
                     <VerdictBadge verdict={report.verdict} size="sm" />
                   ) : (
@@ -149,7 +149,7 @@ export default function ClaimBreakdownAccordion({
                       Pending review
                     </span>
                   )}
-                  <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500">
+                  <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 shrink-0">
                     {isExpanded ? (
                       <ChevronUp className="w-4 h-4" />
                     ) : (

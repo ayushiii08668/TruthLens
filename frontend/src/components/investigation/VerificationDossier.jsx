@@ -64,7 +64,7 @@ export default function VerificationDossier({ report, investigation = null, init
   };
 
   return (
-    <div className="bg-surface rounded-2xl border border-slate-border shadow-editorial p-6 sm:p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-200">
+    <div className="bg-surface rounded-2xl border border-slate-border shadow-editorial p-4 sm:p-6 md:p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-200">
       {/* If article metadata exists (for URL or Long text), display synthesis card */}
       {metadata.articleSummary && (
         <ArticleSummaryCard metadata={metadata} />
@@ -77,13 +77,13 @@ export default function VerificationDossier({ report, investigation = null, init
 
       {/* Dossier Header & Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-slate-border gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2.5 py-0.5 rounded border border-blue-100">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2.5 py-0.5 rounded border border-blue-100">
               Intelligence Dossier #{currentReport._id?.substring?.(0, 8) || 'REPORT'}
             </span>
             {currentReport.createdAt && (
-              <span className="text-xs text-slate-400 flex items-center gap-1">
+              <span className="text-[11px] sm:text-xs text-slate-400 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
                 {new Date(currentReport.createdAt).toLocaleDateString(undefined, {
                   year: 'numeric',
@@ -93,13 +93,13 @@ export default function VerificationDossier({ report, investigation = null, init
               </span>
             )}
           </div>
-          <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-main tracking-tight leading-snug">
+          <h2 className="font-heading font-extrabold text-xl sm:text-2xl md:text-3xl text-slate-main tracking-tight leading-snug break-words">
             {currentReport.claim}
           </h2>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end shrink-0">
           <button
             onClick={handleToggleSave}
             disabled={saveLoading}

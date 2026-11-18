@@ -27,6 +27,20 @@
   box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.04);
 }
 
+/* Responsive horizontal scrolling utility without ugly scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ensure smooth touch scrolling on iOS and mobile browsers */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
 @media print {
   body {
     background-color: #FFFFFF !important;

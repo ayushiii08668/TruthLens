@@ -76,9 +76,9 @@ function SingleEvidenceCard({ item, defaultStance }) {
   return (
     <div className={`bg-surface rounded-xl border ${style.border} p-5 shadow-subtle hover:border-slate-300 transition-all space-y-3`}>
       {/* Card Header: Title & Stance */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3">
         <div className="space-y-0.5 min-w-0 flex-1">
-          <h4 className="font-heading font-bold text-sm text-slate-main line-clamp-1">
+          <h4 className="font-heading font-bold text-sm text-slate-main break-words">
             {title}
           </h4>
           <div className="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
@@ -94,18 +94,16 @@ function SingleEvidenceCard({ item, defaultStance }) {
         </div>
 
         {/* Stance & Relevance Badges */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${style.badgeBg}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
             <span>{style.label}</span>
           </span>
-
-          <span
-            title="Relevance match to assertion"
-            className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200"
-          >
-            {relevance}% match
-          </span>
+          {typeof relevance === 'number' && (
+            <span className="text-[11px] font-mono font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+              {relevance}%
+            </span>
+          )}
         </div>
       </div>
 
@@ -180,10 +178,10 @@ export default function EvidenceExplorer({ supporting = [], contradicting = [], 
         </div>
 
         {/* Navigation Selector */}
-        <div className="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold">
+        <div className="flex overflow-x-auto no-scrollbar sm:inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold gap-1 max-w-full touch-scroll">
           <button
             onClick={() => setActiveTab('ALL')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               activeTab === 'ALL'
                 ? 'bg-surface text-slate-main shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
@@ -193,7 +191,7 @@ export default function EvidenceExplorer({ supporting = [], contradicting = [], 
           </button>
           <button
             onClick={() => setActiveTab('SUPPORTING')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               activeTab === 'SUPPORTING'
                 ? 'bg-emerald-50 text-emerald-800 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
@@ -203,7 +201,7 @@ export default function EvidenceExplorer({ supporting = [], contradicting = [], 
           </button>
           <button
             onClick={() => setActiveTab('CONTRADICTING')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               activeTab === 'CONTRADICTING'
                 ? 'bg-rose-50 text-rose-800 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
@@ -213,7 +211,7 @@ export default function EvidenceExplorer({ supporting = [], contradicting = [], 
           </button>
           <button
             onClick={() => setActiveTab('NEUTRAL')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
+            className={`px-3 py-1.5 rounded-lg transition-all shrink-0 ${
               activeTab === 'NEUTRAL'
                 ? 'bg-slate-200 text-slate-800 shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'

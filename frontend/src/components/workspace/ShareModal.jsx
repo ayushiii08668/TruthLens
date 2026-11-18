@@ -65,7 +65,7 @@ export default function ShareModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="w-full max-w-lg bg-surface rounded-2xl border border-slate-border shadow-editorial p-6 space-y-6 relative"
+        className="w-full max-w-lg bg-surface rounded-2xl border border-slate-border shadow-editorial p-4 sm:p-6 space-y-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -148,17 +148,17 @@ export default function ShareModal({
             <label className="text-xs font-bold text-slate-700 block">
               Public Dossier URL
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
                 type="text"
                 readOnly
                 value={publicUrl}
-                className="flex-1 px-3.5 py-2 text-xs font-mono bg-slate-50 border border-slate-border rounded-xl text-slate-700 focus:outline-none select-all"
+                className="flex-1 px-3.5 py-2 text-xs font-mono bg-slate-50 border border-slate-border rounded-xl text-slate-700 focus:outline-none select-all truncate"
               />
               <button
                 type="button"
                 onClick={handleCopy}
-                className="px-4 py-2 bg-brand-blue hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
+                className="px-4 py-2 bg-brand-blue hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs shrink-0"
               >
                 {copied ? (
                   <>
@@ -168,7 +168,7 @@ export default function ShareModal({
                 ) : (
                   <>
                     <Copy className="w-4 h-4" />
-                    <span>Copy</span>
+                    <span>Copy Link</span>
                   </>
                 )}
               </button>

@@ -42,3 +42,4 @@ services:
           type: web
           name: truthlens-ai-service
           envVarKey: INTERNAL_SERVICE_SECRET
+

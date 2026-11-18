@@ -44,10 +44,10 @@ export default function ConfidenceGauge({ confidence = 50, evidenceSufficiency =
   };
 
   return (
-    <div className="bg-surface rounded-xl p-5 border border-slate-border shadow-xs">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-surface rounded-xl p-4 sm:p-5 border border-slate-border shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-brand-blue" />
+          <ShieldCheck className="w-5 h-5 text-brand-blue shrink-0" />
           <span className="font-heading font-bold text-sm text-slate-main">
             Confidence &amp; Sufficiency
           </span>
@@ -56,7 +56,7 @@ export default function ConfidenceGauge({ confidence = 50, evidenceSufficiency =
         {/* Sufficiency Badge */}
         <div
           title={sufficiency.desc}
-          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${sufficiency.bg} ${sufficiency.text} ${sufficiency.border}`}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border self-start sm:self-auto ${sufficiency.bg} ${sufficiency.text} ${sufficiency.border}`}
         >
           <span className={`w-1.5 h-1.5 rounded-full ${sufficiency.dot}`} />
           <span>Sufficiency: {evidenceSufficiency}</span>

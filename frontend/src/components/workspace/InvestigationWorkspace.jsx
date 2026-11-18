@@ -98,30 +98,30 @@ export default function InvestigationWorkspace({
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* Investigation Master Dossier Card */}
-      <div className="bg-surface rounded-2xl border border-slate-border shadow-editorial p-6 sm:p-8 space-y-6">
+      <div className="bg-surface rounded-2xl border border-slate-border shadow-editorial p-4 sm:p-6 md:p-8 space-y-6">
         {/* Workspace Top Header & Actions */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-slate-border gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2.5 py-0.5 rounded border border-blue-100 flex items-center gap-1.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 flex-wrap">
+              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2 sm:px-2.5 py-0.5 rounded border border-blue-100 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>TruthLens Intelligence Workspace</span>
               </span>
 
               {investigation?._id && (
-                <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
                   INV #{investigation._id.substring(0, 8)}
                 </span>
               )}
 
               {activeReport?._id && (
-                <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                <span className="text-[10px] sm:text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
                   REP #{activeReport._id.substring(0, 8)}
                 </span>
               )}
 
               {(investigation?.createdAt || activeReport?.createdAt) && (
-                <span className="text-xs text-slate-400 flex items-center gap-1 ml-1">
+                <span className="text-[11px] sm:text-xs text-slate-400 flex items-center gap-1 ml-1">
                   <Calendar className="w-3.5 h-3.5" />
                   {new Date(investigation?.createdAt || activeReport?.createdAt).toLocaleDateString(undefined, {
                     year: 'numeric',
@@ -132,13 +132,13 @@ export default function InvestigationWorkspace({
               )}
             </div>
 
-            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-main tracking-tight leading-snug">
+            <h1 className="font-heading font-extrabold text-xl sm:text-2xl md:text-3xl text-slate-main tracking-tight leading-snug break-words">
               {activeReport?.claim || originalInput}
             </h1>
           </div>
 
           {/* Action Toolbar */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end shrink-0">
             {activeReport && (
               <button
                 onClick={handleToggleSave}
@@ -197,7 +197,7 @@ export default function InvestigationWorkspace({
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+          <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium break-words">
             "{originalInput}"
           </p>
         </div>

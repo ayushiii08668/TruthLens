@@ -131,63 +131,63 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
   };
 
   return (
-    <div className="bg-surface rounded-2xl border border-slate-border shadow-editorial p-6 sm:p-8 max-w-4xl mx-auto">
+    <div className="bg-surface rounded-2xl border border-slate-border shadow-editorial p-4 sm:p-6 md:p-8 max-w-4xl mx-auto">
       {/* Input Type Selector Tabs */}
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div className="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-5 gap-3">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row p-1 bg-slate-100 rounded-xl text-xs font-semibold gap-1 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setInputMode('headline')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'headline'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'headline'
                 ? 'bg-surface text-brand-blue shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
               }`}
           >
-            <Search className="w-3.5 h-3.5" />
-            <span>Headline / Claim</span>
+            <Search className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Headline / Claim</span>
           </button>
 
           <button
             type="button"
             onClick={() => setInputMode('text')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'text'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'text'
                 ? 'bg-surface text-brand-blue shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
               }`}
           >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Article Text</span>
+            <FileText className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Article Text</span>
           </button>
 
           <button
             type="button"
             onClick={() => setInputMode('url')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'url'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'url'
                 ? 'bg-surface text-brand-blue shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
               }`}
           >
-            <Globe className="w-3.5 h-3.5" />
-            <span>Article URL</span>
+            <Globe className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Article URL</span>
           </button>
 
           <button
             type="button"
             onClick={() => setInputMode('image')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${inputMode === 'image'
+            className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'image'
                 ? 'bg-surface text-brand-orange shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
               }`}
           >
-            <Camera className="w-3.5 h-3.5" />
-            <span>Image Forensics</span>
+            <Camera className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Image Forensics</span>
           </button>
         </div>
 
         <button
           type="button"
           onClick={() => setShowPresets(!showPresets)}
-          className="text-xs font-bold text-brand-blue hover:text-blue-700 transition-colors"
+          className="text-xs font-bold text-brand-blue hover:text-blue-700 transition-colors self-end sm:self-center"
         >
           {showPresets ? 'Hide Benchmark Presets' : 'Show Benchmark Presets'}
         </button>

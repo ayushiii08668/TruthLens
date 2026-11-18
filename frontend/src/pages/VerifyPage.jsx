@@ -131,16 +131,16 @@ export default function VerifyPage() {
         {/* Results Dossiers / Research Workspace */}
         {investigationResult && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between bg-surface rounded-xl p-4 border border-slate-border">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-surface rounded-xl p-3.5 sm:p-4 border border-slate-border gap-3">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                 <span className="text-xs font-bold text-slate-700">
                   Verification Complete: {investigationResult.reports?.length || 0} claim assertion(s) audited.
                 </span>
               </div>
               <button
                 onClick={handleReset}
-                className="px-4 py-1.5 text-xs font-bold bg-brand-blue text-white rounded-lg hover:bg-blue-700 transition-colors shadow-xs"
+                className="w-full sm:w-auto px-4 py-2 sm:py-1.5 text-xs font-bold bg-brand-blue text-white rounded-lg hover:bg-blue-700 transition-colors shadow-xs text-center"
               >
                 New Verification
               </button>

@@ -160,12 +160,12 @@ export default function HistoryPage() {
                       </span>
                     </div>
 
-                    <h3 className="font-heading font-bold text-sm sm:text-base text-slate-main line-clamp-2">
+                    <h3 className="font-heading font-bold text-sm sm:text-base text-slate-main line-clamp-2 break-words">
                       {inv.originalInput}
                     </h3>
 
                     {inv.extractedClaims && inv.extractedClaims.length > 0 && (
-                      <p className="text-xs text-slate-muted line-clamp-1">
+                      <p className="text-xs text-slate-muted line-clamp-1 break-words">
                         <span className="font-semibold text-slate-600">Extracted Assertion:</span> {inv.extractedClaims[0]}
                       </p>
                     )}

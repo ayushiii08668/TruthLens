@@ -131,13 +131,13 @@ export default function SavedReportsPage() {
 
                     <Link
                       to={`/report/${report._id}`}
-                      className="font-heading font-bold text-base sm:text-lg text-slate-main hover:text-brand-blue transition-colors line-clamp-2"
+                      className="font-heading font-bold text-base sm:text-lg text-slate-main hover:text-brand-blue transition-colors line-clamp-2 break-words"
                     >
                       {report.claim}
                     </Link>
 
                     {report.explanation && (
-                      <p className="text-xs text-slate-muted line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-muted line-clamp-2 leading-relaxed break-words">
                         {report.explanation}
                       </p>
                     )}

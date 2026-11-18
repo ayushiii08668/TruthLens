@@ -59,8 +59,8 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-      <div className="relative w-full max-w-md bg-surface rounded-2xl border border-slate-border shadow-elevated p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs">
+      <div className="relative w-full max-w-md bg-surface rounded-2xl border border-slate-border shadow-elevated p-5 sm:p-8 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
         {/* Close Button */}
         <button
           onClick={closeAuthModal}

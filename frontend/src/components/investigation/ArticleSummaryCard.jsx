@@ -16,24 +16,24 @@ export default function ArticleSummaryCard({ metadata }) {
   } = metadata;
 
   return (
-    <div className="bg-surface rounded-2xl border border-slate-border p-6 shadow-editorial space-y-4 mb-6">
+    <div className="bg-surface rounded-2xl border border-slate-border p-4 sm:p-6 shadow-editorial space-y-4 mb-6">
       {/* Article Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-border gap-2">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 text-brand-blue flex items-center justify-center border border-blue-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-border gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 text-brand-blue flex items-center justify-center border border-blue-100 shrink-0">
             <Newspaper className="w-4 h-4" />
           </div>
-          <div>
+          <div className="min-w-0">
             <span className="text-[10px] font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
               Long-Form Article Investigation
             </span>
-            <h3 className="font-heading font-extrabold text-lg text-slate-main mt-0.5">
+            <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-main mt-0.5 break-words">
               {pageTitle || 'Audited Document Content'}
             </h3>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-slate-500">
+        <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-500 flex-wrap">
           {publisher && (
             <span className="font-bold text-slate-700">
               {publisher}

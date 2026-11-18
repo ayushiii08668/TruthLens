@@ -42,11 +42,12 @@ export default function PDFReportExporter({
       ) : (
         <button
           onClick={handlePrint}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-surface border border-slate-border text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold bg-surface border border-slate-border text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs"
           title="Print or Export PDF Intelligence Dossier"
         >
-          <Printer className="w-4 h-4 text-slate-500" />
-          <span>Export Dossier (PDF)</span>
+          <Printer className="w-4 h-4 text-slate-500 shrink-0" />
+          <span className="hidden sm:inline">Export Dossier (PDF)</span>
+          <span className="sm:hidden">PDF</span>
         </button>
       )}
 

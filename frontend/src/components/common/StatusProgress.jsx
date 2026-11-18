@@ -64,18 +64,18 @@ export default function StatusProgress({ currentStatus = 'extracting_claims', er
   };
 
   return (
-    <div className="bg-surface rounded-2xl p-6 sm:p-8 border border-slate-border shadow-editorial max-w-3xl mx-auto my-8">
-      <div className="flex items-center justify-between pb-6 border-b border-slate-border mb-6">
+    <div className="bg-surface rounded-2xl p-4 sm:p-6 md:p-8 border border-slate-border shadow-editorial max-w-3xl mx-auto my-6 sm:my-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 sm:pb-6 border-b border-slate-border mb-6 gap-3">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2.5 py-0.5 rounded border border-blue-100">
+          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-2.5 py-0.5 rounded border border-blue-100">
             Real-Time Pipeline Execution
           </span>
-          <h3 className="font-heading font-extrabold text-xl text-slate-main mt-1">
+          <h3 className="font-heading font-extrabold text-lg sm:text-xl text-slate-main mt-1">
             Investigating Claim
           </h3>
         </div>
         {currentStatus !== 'completed' && currentStatus !== 'failed' && (
-          <div className="flex items-center gap-2 text-xs font-semibold text-brand-blue bg-blue-50/60 px-3 py-1.5 rounded-full border border-blue-100">
+          <div className="flex items-center gap-2 text-xs font-semibold text-brand-blue bg-blue-50/60 px-3 py-1.5 rounded-full border border-blue-100 shrink-0">
             <Loader2 className="w-4 h-4 animate-spin text-brand-blue" />
             <span>Analyzing Sources...</span>
           </div>
