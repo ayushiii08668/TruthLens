@@ -1,0 +1,44 @@
+services:
+  # 1. TruthLens AI Microservice (FastAPI + RapidOCR)
+  - type: web
+    name: truthlens-ai-service
+    env: python
+    rootDir: ai-service
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: INTERNAL_SERVICE_SECRET
+        generateValue: true
+
+  # 2. TruthLens Main API Backend (Node.js Express + MongoDB)
+  - type: web
+    name: truthlens-backend
+    env: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: "*"
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: truthlens-ai-service
+          property: host
+      - key: AI_SERVICE_SECRET
+        fromService:
+          type: web
+          name: truthlens-ai-service
+          envVarKey: INTERNAL_SERVICE_SECRET

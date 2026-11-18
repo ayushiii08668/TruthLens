@@ -33,8 +33,8 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Support Vercel production and preview deployment URLs
-    if (/^https:\/\/truthlens.*\.vercel\.app$/.test(origin)) {
+    // Support all Vercel production and preview deployment URLs
+    if (/^https:\/\/.*\.vercel\.app$/.test(origin)) {
       return callback(null, true);
     }
 
@@ -64,7 +64,7 @@ app.get('/api/docs.json', (req, res) => {
 });
 
 // Root & Health Check Endpoints
-app.get('/api/health', (req, res) => {
+app.get(['/health', '/api/health'], (req, res) => {
   res.status(200).json({
     status: 'ok',
     service: 'truthlens-backend',

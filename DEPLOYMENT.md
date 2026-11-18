@@ -6,7 +6,67 @@
 
 ---
 
-## 1. System Architecture Overview
+## 1. Quick Start: Deploying TruthLens on Render & Vercel
+
+TruthLens is deployed using:
+- **Render** for the 2 backend services (`truthlens-ai-service` and `truthlens-backend`)
+- **Vercel** for the frontend (`frontend/`)
+- **MongoDB Atlas** for database persistence
+
+### Option A: Render Blueprint (Easiest & Automatic)
+The repository includes a ready-to-run [render.yaml](file:///c:/Users/ayush/OneDrive/Desktop/TruthLens/render.yaml) Blueprint:
+1. Go to [dashboard.render.com](https://dashboard.render.com) and click **"New +"** &rarr; **"Blueprint"**.
+2. Connect your GitHub repository: `ayushiii08668/TruthLens`.
+3. Render reads `render.yaml` and sets up both the AI microservice and Node.js backend.
+4. When prompted, enter your `MONGODB_URI` (from MongoDB Atlas).
+5. Click **"Apply"**.
+
+### Option B: Manual Setup on Render
+If setting up web services individually on Render:
+
+#### Service 1: AI Microservice (`truthlens-ai-service`)
+- **Name:** `truthlens-ai-service`
+- **Root Directory:** `ai-service`
+- **Environment:** `Python 3`
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Environment Variables:**
+  - `ENVIRONMENT` = `production`
+  - `INTERNAL_SERVICE_SECRET` = `internal_truthlens_ai_microservice_secret_2026`
+
+#### Service 2: Main Backend (`truthlens-backend`)
+- **Name:** `truthlens-backend`
+- **Root Directory:** `backend`
+- **Environment:** `Node`
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Environment Variables:**
+  - `NODE_ENV` = `production`
+  - `MONGODB_URI` = `mongodb+srv://<user>:<password>@cluster0.f5xnyfq.mongodb.net/truthlens?retryWrites=true&w=majority`
+  - `JWT_SECRET` = `truthlens_super_secure_jwt_secret_key_2026`
+  - `CLIENT_URL` = `*` (or your Vercel URL once deployed)
+  - `AI_SERVICE_URL` = `https://<your-truthlens-ai-service>.onrender.com`
+  - `AI_SERVICE_SECRET` = `internal_truthlens_ai_microservice_secret_2026`
+
+---
+
+## 2. Deploying Frontend to Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new) and log in with your GitHub account.
+2. Select **`ayushiii08668/TruthLens`** and click **Import**.
+3. In the project configuration:
+   - **Framework Preset:** `Vite`
+   - **Root Directory:** Click "Edit" and choose `frontend` (⚠️ **CRITICAL**)
+   - **Build Command:** `npm run build` (Default)
+   - **Output Directory:** `dist` (Default)
+4. Under **Environment Variables**, add:
+   - **Key:** `VITE_API_URL`
+   - **Value:** `https://<your-truthlens-backend>.onrender.com` (your Render backend URL)
+5. Click **Deploy**.
+
+---
+
+## 3. System Architecture Overview
 
 TruthLens is deployed as a resilient, decoupled three-tier microservice architecture:
 
