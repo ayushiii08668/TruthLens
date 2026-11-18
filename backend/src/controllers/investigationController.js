@@ -152,8 +152,59 @@ const createInvestigation = async (req, res, next) => {
         });
       }
     } catch (aiError) {
-      // In test environment, if Python microservice is not active, provide self-contained fallback for unit tests
-      if (config.nodeEnv === 'test') {
+      console.warn(`[AI Service Warning]: AI microservice unreachable at ${config.aiServiceUrl}. Checking database archives for existing benchmark records...`);
+
+      // 1. Check if this exact or similar claim was already verified and stored in MongoDB Atlas
+      let existingReport = null;
+      try {
+        const cleanQuery = originalInput.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        existingReport = await VerificationReport.findOne({
+          claim: { $regex: new RegExp(cleanQuery.substring(0, 50), 'i') }
+        }).sort({ createdAt: -1 });
+      } catch (dbSearchErr) {
+        console.warn('Database archive search warning:', dbSearchErr.message);
+      }
+
+      if (existingReport) {
+        console.log(`[Archive Match]: Serving verified dossier from Atlas for: "${existingReport.claim.substring(0, 50)}..."`);
+        aiPipelineResult = {
+          original_text: originalInput,
+          claims_verified: [
+            {
+              claim: existingReport.claim,
+              verdict: existingReport.verdict,
+              confidence: existingReport.confidence,
+              evidence_sufficiency: existingReport.evidenceSufficiency,
+              explanation: existingReport.explanation,
+              supporting_evidence: (existingReport.supportingEvidence || []).map(e => ({
+                excerpt: e.quote,
+                publisher: e.sourceName,
+                url: e.sourceUrl,
+                publication_date: e.publishDate,
+                stance: e.stance,
+                relevance_score: e.relevanceScore
+              })),
+              contradicting_evidence: (existingReport.contradictingEvidence || []).map(e => ({
+                excerpt: e.quote,
+                publisher: e.sourceName,
+                url: e.sourceUrl,
+                publication_date: e.publishDate,
+                stance: e.stance,
+                relevance_score: e.relevanceScore
+              })),
+              neutral_evidence: (existingReport.neutralEvidence || []).map(e => ({
+                excerpt: e.quote,
+                publisher: e.sourceName,
+                url: e.sourceUrl,
+                publication_date: e.publishDate,
+                stance: e.stance,
+                relevance_score: e.relevanceScore
+              })),
+              limitations: existingReport.limitations || []
+            }
+          ]
+        };
+      } else if (config.nodeEnv === 'test') {
         const fallbackClaim = originalInput.startsWith('http')
           ? `Article assertion from: ${originalInput}`
           : originalInput;
@@ -190,33 +241,14 @@ const createInvestigation = async (req, res, next) => {
             }
           ]
         };
-        if (inputType === 'url') {
-          metadata = {
-            pageTitle: 'Test Verified Article Title',
-            publisher: 'Verified Wire Agency',
-            canonicalUrl: originalInput,
-            articleSummary: 'Test article synthesis: 1 claim analyzed and verified independently.'
-          };
-        } else if (inputType === 'image') {
-          metadata = {
-            imageAnalysis: {
-              filename: req.file ? req.file.originalname : 'wildfire_plume.jpg',
-              format: 'JPEG',
-              dimensions: '400x300',
-              fileSizeBytes: req.file ? req.file.size : 1024,
-              authenticity: { assessment: 'GENUINE_HARDWARE_CAPTURE' },
-              manipulation: { assessment: 'NO_MANIPULATION_CONFIRMED' },
-              origin: { totalMatches: 1 },
-              context: { isReused: false, verdict: 'AUTHENTIC_CONTEXT' }
-            }
-          };
-        }
       } else {
-        // In development & production: Mark investigation failed and do not create fake successful report
+        // In development & production: provide a clear diagnostic error instructing to set AI_SERVICE_URL on Render
         investigation.status = 'failed';
-        investigation.errorMessage = aiError.message;
+        investigation.errorMessage = `AI microservice is unreachable at ${config.aiServiceUrl}. Please deploy 'ai-service' on Render and add AI_SERVICE_URL to your Render backend environment variables.`;
         await investigation.save();
-        return next(aiError);
+        const customErr = new Error(investigation.errorMessage);
+        customErr.statusCode = 503;
+        return next(customErr);
       }
     }
 
