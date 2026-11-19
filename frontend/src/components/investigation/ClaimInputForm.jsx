@@ -28,12 +28,40 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
 
-  const scanImageText = async (canvasOrFile) => {
+  const scanImageText = async (canvas, originalFile) => {
     setIsScanningText(true);
     try {
       const { createWorker } = await import('tesseract.js');
       const worker = await createWorker('eng');
-      const ret = await worker.recognize(canvasOrFile);
+
+      // Smart split-layout thumbnail detection:
+      // For widescreen graphics (w/h >= 1.2), thumbnails almost universally have a split layout
+      // with the bold headline text in the left ~55% and photos/faces/helmets on the right.
+      // Scanning the text banner region prevents facial features, helmet grills, and jersey letters from polluting the headline.
+      if (canvas && canvas.width && canvas.height && (canvas.width / canvas.height >= 1.2)) {
+        const cropW = Math.round(canvas.width * 0.55);
+        const cropCanvas = document.createElement('canvas');
+        cropCanvas.width = cropW;
+        cropCanvas.height = canvas.height;
+        const cropCtx = cropCanvas.getContext('2d');
+        cropCtx.drawImage(canvas, 0, 0, cropW, canvas.height, 0, 0, cropW, canvas.height);
+
+        const leftRet = await worker.recognize(cropCanvas);
+        const leftCleaned = cleanOcrHeadline(leftRet?.data?.text);
+        const wordCount = (leftCleaned.match(/[a-zA-Z0-9]+/g) || []).length;
+
+        // If left half contains a distinct headline (>= 3 words with high confidence), use it!
+        if (wordCount >= 3 && (leftRet?.data?.confidence || 0) >= 60) {
+          await worker.terminate();
+          setCaption(leftCleaned);
+          setAutoDetectedHeadline(leftCleaned);
+          setIsScanningText(false);
+          return;
+        }
+      }
+
+      // Default: scan full canvas or file
+      const ret = await worker.recognize(canvas || originalFile);
       await worker.terminate();
 
       const cleaned = cleanOcrHeadline(ret?.data?.text);
@@ -149,11 +177,11 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
           });
           setImageFile(optimizedFile);
           setImagePreview(canvas.toDataURL('image/jpeg', 0.88));
-          scanImageText(canvas);
+          scanImageText(canvas, optimizedFile);
         } else {
           setImageFile(file);
           setImagePreview(canvas.toDataURL());
-          scanImageText(file);
+          scanImageText(canvas, file);
         }
       }, 'image/jpeg', 0.88);
     };

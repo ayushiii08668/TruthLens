@@ -1,5 +1,5 @@
 /**
- * Cleans and formats OCR text extracted from news thumbnails or media graphics.
+ * Cleans and formats OCR text extracted from news thumbnails, banners, and media graphics.
  */
 export function cleanOcrHeadline(rawText) {
   if (!rawText || typeof rawText !== 'string') return '';
@@ -8,24 +8,34 @@ export function cleanOcrHeadline(rawText) {
     .map(line => line.trim())
     .filter(line => {
       if (line.length < 3) return false;
+      // Filter out publisher badges/logos/watermarks
       if (/crictoday|lifeline|aircel|gulf|subscribe|follow us|youtube/i.test(line)) return false;
-      const letters = (line.match(/[a-zA-Z]{2,}/g) || []).length;
-      return letters >= 1;
+      // Must contain at least one word or number
+      const tokens = line.match(/[a-zA-Z0-9]+/g) || [];
+      return tokens.length >= 1;
     });
 
   let headline = lines
-    .map(l => l.replace(/^[^\w\d]+|[^\w\d]+$/g, ''))
+    .map(line => {
+      // Remove trailing noise symbols like |, \, }, ], >, etc.
+      return line.replace(/[\\|\]\}\>]+$/g, '').trim();
+    })
     .filter(l => l.length >= 2)
     .join(' ');
 
+  // Standardize common sports/news OCR artifacts
   headline = headline
     .replace(/\bvs\s*GSK\b/gi, 'vs CSK')
+    .replace(/\bvs\s*CSK\s*T?IPL\b/gi, 'vs CSK | IPL')
     .replace(/\bT?IPL\b/g, 'IPL')
-    .replace(/\b2025\s*4[oO0]\b/g, 'IPL 2025')
+    .replace(/\b2025\s*4[oO0]\b/g, '2025')
     .replace(/\|\s*\{[^}]*\}?/g, '')
-    .replace(/[|\\]+/g, '')
+    .replace(/[|\\]{2,}/g, '|')
     .replace(/\s{2,}/g, ' ')
     .trim();
+
+  // Strip leading non-alphanumeric noise (e.g. stray bracket or quote)
+  headline = headline.replace(/^[^a-zA-Z0-9]+/, '');
 
   return headline;
 }
