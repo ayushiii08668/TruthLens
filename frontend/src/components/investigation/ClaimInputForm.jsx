@@ -10,9 +10,11 @@ import {
   Info,
   X,
   CheckCircle2,
-  FileCheck
+  FileCheck,
+  Sparkles
 } from 'lucide-react';
 import PresetSelector from './PresetSelector';
+import { cleanOcrHeadline } from '../../utils/ocrCleaner';
 
 export default function ClaimInputForm({ onSubmit, isLoading }) {
   const [inputMode, setInputMode] = useState('headline'); // 'headline' | 'text' | 'url' | 'image'
@@ -20,9 +22,31 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [caption, setCaption] = useState('');
+  const [isScanningText, setIsScanningText] = useState(false);
+  const [autoDetectedHeadline, setAutoDetectedHeadline] = useState('');
   const [showPresets, setShowPresets] = useState(true);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
+
+  const scanImageText = async (canvasOrFile) => {
+    setIsScanningText(true);
+    try {
+      const { createWorker } = await import('tesseract.js');
+      const worker = await createWorker('eng');
+      const ret = await worker.recognize(canvasOrFile);
+      await worker.terminate();
+
+      const cleaned = cleanOcrHeadline(ret?.data?.text);
+      if (cleaned && cleaned.length >= 5) {
+        setCaption(cleaned);
+        setAutoDetectedHeadline(cleaned);
+      }
+    } catch (err) {
+      console.warn('[Vision OCR] Browser-side OCR non-fatal fallback:', err);
+    } finally {
+      setIsScanningText(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,11 +54,12 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
 
     if (inputMode === 'image') {
       if (!imageFile) return;
+      const effectiveCaption = caption.trim() || autoDetectedHeadline.trim();
       onSubmit({
-        originalInput: caption.trim() || '',
+        originalInput: effectiveCaption,
         inputType: 'image',
         imageFile,
-        caption: caption.trim()
+        caption: effectiveCaption
       });
     } else {
       if (!inputText.trim()) return;
@@ -124,16 +149,21 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
           });
           setImageFile(optimizedFile);
           setImagePreview(canvas.toDataURL('image/jpeg', 0.88));
+          scanImageText(canvas);
         } else {
           setImageFile(file);
           setImagePreview(canvas.toDataURL());
+          scanImageText(file);
         }
       }, 'image/jpeg', 0.88);
     };
     img.onerror = () => {
       setImageFile(file);
       const reader = new FileReader();
-      reader.onload = (e) => setImagePreview(e.target?.result);
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result);
+        scanImageText(file);
+      };
       reader.readAsDataURL(file);
     };
     img.src = objectUrl;
@@ -161,6 +191,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
+    setCaption('');
+    setAutoDetectedHeadline('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -317,16 +349,28 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Accompanying News Headline or Claim (Optional / Auto-Extracted)
                 </label>
-                <span className="text-[11px] text-brand-blue font-semibold">
-                  Vision AI scans overlay text
-                </span>
+                {isScanningText ? (
+                  <span className="flex items-center gap-1.5 text-[11px] text-brand-orange font-bold animate-pulse">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Transcribing image headline...
+                  </span>
+                ) : autoDetectedHeadline ? (
+                  <span className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-bold">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                    Headline auto-transcribed
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-brand-blue font-semibold">
+                    Vision AI scans overlay text
+                  </span>
+                )}
               </div>
               <input
                 type="text"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                placeholder="Leave blank to auto-detect text from image, or enter headline (e.g. Dhoni Retirement Buzz | IPL 2025)..."
-                className="w-full p-3 text-sm bg-canvas/40 border border-slate-border rounded-xl focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange text-slate-main placeholder-slate-400"
+                placeholder={isScanningText ? "Scanning image overlay for text..." : "Auto-extracted from image, or enter/edit headline here..."}
+                className="w-full p-3 text-sm bg-canvas/40 border border-slate-border rounded-xl focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange text-slate-main placeholder-slate-400 font-medium"
               />
               <p className="text-[11px] text-slate-500 mt-1">
                 TruthLens Vision OCR automatically transcribes overlay headlines, breaking news banners, and graphic text.

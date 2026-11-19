@@ -22,7 +22,13 @@ def get_rapid_ocr_engine():
         try:
             from rapidocr_onnxruntime import RapidOCR
             _RAPID_OCR_INSTANCE = RapidOCR(use_angle_cls=False)
-            logger.info("RapidOCR ONNX Runtime engine initialized as singleton (use_angle_cls=False)")
+            # Prevent RapidOCR from upscaling images to 736px min side (saves 60-70% CPU time on cloud vCPU)
+            if hasattr(_RAPID_OCR_INSTANCE, "text_detector") and hasattr(_RAPID_OCR_INSTANCE.text_detector, "preprocess_op"):
+                for op in _RAPID_OCR_INSTANCE.text_detector.preprocess_op:
+                    if type(op).__name__ == "DetResizeForTest":
+                        op.limit_type = "max"
+                        op.limit_side_len = 400
+            logger.info("RapidOCR ONNX Runtime engine initialized with limit_side_len=400 (max) and use_angle_cls=False")
         except Exception as e:
             logger.warning("Failed to initialize RapidOCR singleton: %s", type(e).__name__)
     return _RAPID_OCR_INSTANCE
