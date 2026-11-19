@@ -170,14 +170,16 @@ class AIService {
         formData.append('caption', caption);
       }
 
+      console.log(`[AIService] Sending image (${imageBuffer ? imageBuffer.length : 0} bytes) to ${config.aiServiceUrl}/media/image-investigate...`);
       const res = await this.client.post('/media/image-investigate', formData, {
         headers: {
           'Content-Type': undefined
         }
       });
+      console.log(`[AIService] Image OCR succeeded: "${res.data.ocr_text || ''}", Claims count: ${(res.data.claims_verified || []).length}`);
       return res.data;
     } catch (error) {
-      console.warn(`[AIService] /media/image-investigate failed (${error.message}). Serving resilient image intake dossier.`);
+      console.warn(`[AIService Warning] /media/image-investigate to ${config.aiServiceUrl} failed (${error.message}). Serving resilient image intake dossier.`);
       return this._fallbackImage(imageBuffer, filename, caption);
     }
   }

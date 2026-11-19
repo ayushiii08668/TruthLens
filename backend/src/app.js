@@ -7,6 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const config = require('./config');
 const swaggerSpec = require('./config/swagger');
 const routes = require('./routes');
+const aiService = require('./services/aiService');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
@@ -64,10 +65,14 @@ app.get('/api/docs.json', (req, res) => {
 });
 
 // Root & Health Check Endpoints
-app.get(['/health', '/api/health'], (req, res) => {
+app.get(['/health', '/api/health'], async (req, res) => {
+  const aiHealth = await aiService.checkHealth();
   res.status(200).json({
     status: 'ok',
     service: 'truthlens-backend',
+    aiServiceUrl: config.aiServiceUrl,
+    aiServiceConnected: aiHealth.status === 'ok' || aiHealth.status === 'operational',
+    aiServiceStatus: aiHealth,
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
