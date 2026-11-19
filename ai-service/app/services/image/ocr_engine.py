@@ -21,8 +21,8 @@ def get_rapid_ocr_engine():
     if _RAPID_OCR_INSTANCE is None:
         try:
             from rapidocr_onnxruntime import RapidOCR
-            _RAPID_OCR_INSTANCE = RapidOCR()
-            logger.info("RapidOCR ONNX Runtime engine initialized as singleton")
+            _RAPID_OCR_INSTANCE = RapidOCR(use_angle_cls=False)
+            logger.info("RapidOCR ONNX Runtime engine initialized as singleton (use_angle_cls=False)")
         except Exception as e:
             logger.warning("Failed to initialize RapidOCR singleton: %s", type(e).__name__)
     return _RAPID_OCR_INSTANCE
@@ -64,7 +64,7 @@ class ImageOCREngine:
                 img = img.convert("RGB")
 
             # Downscale large images for sub-second CPU inference on low-vCPU cloud instances
-            max_dim = 640
+            max_dim = 480
             if max(img.width, img.height) > max_dim:
                 scale = max_dim / float(max(img.width, img.height))
                 new_w = max(1, int(img.width * scale))
@@ -91,15 +91,21 @@ class ImageOCREngine:
                 return {"headline": "", "all_text": "", "entities": []}
 
             # Filter out watermarks/logos like "crictoday", "lifelineof cricket", "aircel"
-            brand_filter = {"crictoday", "lifelineof cricket", "lifeline of cricket", "aircel", "gulf", "gult"}
-            headline_tokens = [l for l in lines if l.lower() not in brand_filter]
+            brand_filter = ("crictoday", "lifeline", "aircel", "gulf", "gult")
+            headline_tokens = [
+                l for l in lines 
+                if not any(b in l.lower() for b in brand_filter)
+            ]
 
             headline = " ".join(headline_tokens).strip()
             all_text = " ".join(lines).strip()
 
             # Clean OCR artifacts
+            headline = re.sub(r"(Ashwin)\s*vs\s*CSK[TI]*PL", r"\1 vs CSK | IPL", headline, flags=re.IGNORECASE)
+            headline = re.sub(r"\bvs\s*CSK\s*T?IPL\b", "vs CSK | IPL", headline, flags=re.IGNORECASE)
+            headline = re.sub(r"\bvsCSK[TI]*PL\b", "vs CSK | IPL", headline, flags=re.IGNORECASE)
             headline = re.sub(r"\bTIPL\b", "IPL", headline)
-            headline = re.sub(r"\b2025\s+4[oO0]\b", "2025", headline)
+            headline = re.sub(r"\b2025\s*4[oO0]\b", "2025", headline)
             headline = re.sub(r"\s{2,}", " ", headline).strip()
 
             logger.info("RapidOCR local extraction succeeded: '%s'", headline[:80])
@@ -377,7 +383,7 @@ class ImageOCREngine:
             "software": software_info,
             "capture_date": capture_date,
             "ocr_text": combined_text,
-            "headline": rapid_data.get("headline", ""),
+            "headline": "",
             "entities": entities,
             "dates": dates,
             "primary_location": primary_location

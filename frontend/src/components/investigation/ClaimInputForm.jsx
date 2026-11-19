@@ -99,7 +99,7 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
       URL.revokeObjectURL(objectUrl);
       const maxDim = 800;
       let { width, height } = img;
-      
+
       if (width > maxDim || height > maxDim) {
         if (width > height) {
           height = Math.round((height * maxDim) / width);
@@ -179,8 +179,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
             type="button"
             onClick={() => setInputMode('headline')}
             className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'headline'
-                ? 'bg-surface text-brand-blue shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-surface text-brand-blue shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
               }`}
           >
             <Search className="w-3.5 h-3.5 shrink-0" />
@@ -191,8 +191,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
             type="button"
             onClick={() => setInputMode('text')}
             className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'text'
-                ? 'bg-surface text-brand-blue shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-surface text-brand-blue shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
               }`}
           >
             <FileText className="w-3.5 h-3.5 shrink-0" />
@@ -203,8 +203,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
             type="button"
             onClick={() => setInputMode('url')}
             className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'url'
-                ? 'bg-surface text-brand-blue shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-surface text-brand-blue shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
               }`}
           >
             <Globe className="w-3.5 h-3.5 shrink-0" />
@@ -215,8 +215,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
             type="button"
             onClick={() => setInputMode('image')}
             className={`flex items-center justify-center sm:justify-start gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg transition-all ${inputMode === 'image'
-                ? 'bg-surface text-brand-orange shadow-xs font-bold'
-                : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-surface text-brand-orange shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
               }`}
           >
             <Camera className="w-3.5 h-3.5 shrink-0" />
@@ -251,8 +251,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${dragActive
-                    ? 'border-brand-orange bg-orange-50/50'
-                    : 'border-slate-border hover:border-slate-400 bg-canvas/30'
+                  ? 'border-brand-orange bg-orange-50/50'
+                  : 'border-slate-border hover:border-slate-400 bg-canvas/30'
                   }`}
               >
                 <input
@@ -375,8 +375,8 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
               (inputMode !== 'image' && inputText.trim().length < 5)
             }
             className={`w-full sm:w-auto px-6 py-3 disabled:opacity-50 text-white font-heading font-extrabold text-sm rounded-xl transition-all shadow-editorial flex items-center justify-center gap-2 shrink-0 ${inputMode === 'image'
-                ? 'bg-brand-orange hover:bg-orange-600'
-                : 'bg-brand-blue hover:bg-blue-700'
+              ? 'bg-brand-orange hover:bg-orange-600'
+              : 'bg-brand-blue hover:bg-blue-700'
               }`}
           >
             {isLoading ? (
