@@ -53,6 +53,17 @@ app.include_router(evidence_router)
 app.include_router(verification_router)
 app.include_router(media_router)
 
+@app.on_event("startup")
+async def startup_warmup():
+    """Pre-initializes the RapidOCR ONNX inference sessions on server boot so user requests experience zero cold-start delay."""
+    try:
+        from app.services.image.ocr_engine import get_rapid_ocr_engine
+        engine = get_rapid_ocr_engine()
+        if engine:
+            logger.info("RapidOCR ONNX models pre-loaded and ready for immediate inference.")
+    except Exception as e:
+        logger.warning("RapidOCR pre-warmup warning: %s", type(e).__name__)
+
 @app.get("/", tags=["System"])
 def root():
     return {

@@ -53,7 +53,7 @@ class MediaInvestigator:
                         max_results=3,
                         include_full_text=False
                     ),
-                    timeout=6.0
+                    timeout=4.0
                 )
                 evidence_list = evidence_res.evidence
             except Exception as e:
@@ -123,7 +123,7 @@ class MediaInvestigator:
                         max_results=3,
                         include_full_text=False
                     ),
-                    timeout=6.0
+                    timeout=4.0
                 )
                 evidence_list = evidence_res.evidence
             except Exception as e:
@@ -254,7 +254,7 @@ class MediaInvestigator:
                         max_results=3,
                         include_full_text=False
                     ),
-                    timeout=6.0
+                    timeout=4.0
                 )
                 evidence_list = evidence_res.evidence
             except Exception as e:

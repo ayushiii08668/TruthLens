@@ -63,13 +63,13 @@ class ImageOCREngine:
             if img.mode != "RGB":
                 img = img.convert("RGB")
 
-            # Downscale large images (e.g., 4000x3000 phone captures) to max 1024px for speed
-            max_dim = 1024
+            # Downscale large images for sub-second CPU inference on low-vCPU cloud instances
+            max_dim = 640
             if max(img.width, img.height) > max_dim:
                 scale = max_dim / float(max(img.width, img.height))
                 new_w = max(1, int(img.width * scale))
                 new_h = max(1, int(img.height * scale))
-                img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+                img = img.resize((new_w, new_h), Image.Resampling.BILINEAR)
 
             img_np = np.array(img)
             result, _ = engine(img_np)

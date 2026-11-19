@@ -92,12 +92,12 @@ export default function ClaimInputForm({ onSubmit, isLoading }) {
       return;
     }
 
-    // Client-side auto-optimization: downscale high-res mobile photos to max 1200px for instant cloud upload & inference
+    // Client-side auto-optimization: downscale photos to max 800px for instant cloud upload & inference
     const img = new window.Image();
     const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
-      const maxDim = 1200;
+      const maxDim = 800;
       let { width, height } = img;
       
       if (width > maxDim || height > maxDim) {

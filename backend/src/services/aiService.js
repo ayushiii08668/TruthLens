@@ -5,7 +5,7 @@ class AIService {
   constructor() {
     this.client = axios.create({
       baseURL: config.aiServiceUrl,
-      timeout: 45000, // 45s ceiling accommodates Render cold-starts gracefully
+      timeout: 60000, // 60s accommodates cloud microservice OCR + wire evidence retrieval
       headers: {
         'Content-Type': 'application/json',
         'X-Internal-Secret': config.aiServiceSecret
