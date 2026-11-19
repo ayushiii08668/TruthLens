@@ -251,10 +251,10 @@ class MediaInvestigator:
                 evidence_res = await asyncio.wait_for(
                     search_evidence(
                         claim=claim_item.normalized_claim,
-                        max_results=3,
+                        max_results=5,
                         include_full_text=False
                     ),
-                    timeout=4.0
+                    timeout=7.0
                 )
                 evidence_list = evidence_res.evidence
             except Exception as e:

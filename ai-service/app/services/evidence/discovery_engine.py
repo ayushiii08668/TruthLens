@@ -67,7 +67,7 @@ class EvidenceDiscoveryEngine:
                 logger.warning("Provider %s failed for query %s: %s", provider.provider_name, q, type(e).__name__)
                 return []
 
-        active_queries = queries[:3]
+        active_queries = queries[:4]
         tasks = [run_query(provider, q) for provider in active_providers for q in active_queries]
         try:
             results_lists = await asyncio.wait_for(asyncio.gather(*tasks, return_exceptions=True), timeout=6.0)

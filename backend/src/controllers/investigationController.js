@@ -261,17 +261,13 @@ const createInvestigation = async (req, res, next) => {
               explanation: `Current publicly accessible evidence is insufficient to substantiate or refute this claim conclusively.\n\n**What was claimed:** "${cleanClaim}".\n\n**Why this assessment was selected:** While the cloud AI retrieval microservice is initializing, available public wire archives yielded no immediate primary confirmation. In accordance with strict epistemic standards, TruthLens marks unsubstantiated claims as UNVERIFIED rather than guessing.`,
               supporting_evidence: [],
               contradicting_evidence: [],
-              neutral_evidence: [
+              neutral_evidence: [],
+              sources: [
                 {
-                  excerpt: `Public wire query for "${cleanClaim.substring(0, 60)}". Awaiting secondary wire syndication.`,
-                  publisher: 'Global News Wire Index',
-                  url: 'https://news.google.com',
-                  publication_date: new Date().toISOString().split('T')[0],
-                  stance: 'NEUTRAL',
-                  relevance_score: 0.50
+                  name: 'Public Intelligence & Wire Archives',
+                  url: `https://www.google.com/search?q=${encodeURIComponent(cleanClaim)}`
                 }
               ],
-              sources: [{ name: 'Global News Wire Index', url: 'https://news.google.com' }],
               limitations: [
                 'Cloud AI microservice is currently spinning up on host infrastructure.',
                 'Adhering to strict epistemic safety standard: Default UNVERIFIED on data scarcity.'

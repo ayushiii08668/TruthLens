@@ -1,7 +1,6 @@
 import re
 from typing import List
 from app.utils.entity_extractor import extract_entities
-from app.utils.temporal_extractor import extract_temporal
 
 class QueryGenerator:
     STOPWORDS = {
@@ -11,70 +10,100 @@ class QueryGenerator:
         "two", "over", "into", "from", "than", "more", "some", "all", "its", "their"
     }
 
+    OCR_NOISE_RE = re.compile(
+        r"\b(?:\d+o|mar|yo|asl|fns|xi|ns|em|f's|4o)\b|[^\w\s\-\.\']", 
+        re.IGNORECASE
+    )
+
     @classmethod
     def generate_queries(cls, claim: str) -> List[str]:
         if not claim or not claim.strip():
             return []
 
-        # 0. Normalize numbers with commas: 1,600 -> 1600
-        num_clean_claim = re.sub(r"(\d+),(\d+)", r"\1\2", claim)
+        # 0. Clean quotes and excessive whitespace
+        raw = re.sub(r'[\"\']', '', claim).strip()
+
+        # 1. Detect shared context suffix like "| IPL 2025" or "(2025)"
+        context_suffix = ""
+        pipe_parts = [p.strip() for p in raw.split("|") if p.strip()]
+        if len(pipe_parts) > 1:
+            last = pipe_parts[-1]
+            last_clean = cls.OCR_NOISE_RE.sub(" ", last).strip()
+            if 0 < len(last_clean.split()) <= 3:
+                context_suffix = last_clean
+                raw = " | ".join(pipe_parts[:-1])
+
+        # 2. Check for compound headline delimiters: comma, &, ;, pipe, or newline
+        delimiters = r'[,;&\n\r|]'
+        raw_clauses = re.split(delimiters, raw)
+        clauses = []
+        for rc in raw_clauses:
+            cleaned = cls.OCR_NOISE_RE.sub(" ", rc)
+            words = [w for w in cleaned.split() if len(w) > 1 and w.lower() not in cls.STOPWORDS]
+            if len(words) >= 2:
+                clauses.append(" ".join(words))
+
+        queries: List[str] = []
+
+        # If compound clauses were found, generate focused query for each clause
+        if len(clauses) >= 2:
+            for clause in clauses:
+                if context_suffix and context_suffix.lower() not in clause.lower():
+                    q = f"{clause} {context_suffix}".strip()
+                else:
+                    q = clause.strip()
+                if q and q not in queries:
+                    queries.append(q)
+
+        # 3. Extract proper nouns / entities
+        num_clean_claim = re.sub(r"(\d+),(\d+)", r"\1\2", raw)
         clean_claim = re.sub(r"[^\w\s\$\%\-\.]", " ", num_clean_claim).strip()
-
-        # 1. Extract entities and dates
-        entities, location = extract_entities(clean_claim)
-        dates, numbers = extract_temporal(clean_claim)
-
-        # Detect capitalized proper nouns (e.g. Nvidia, Dow Jones, Robert Pattinson)
+        entities, _ = extract_entities(clean_claim)
         proper_nouns = re.findall(r"\b[A-Z][a-zA-Z0-9\-\.]*(?:\s+[A-Z][a-zA-Z0-9\-\.]*)*\b", num_clean_claim)
-        entity_parts = list(dict.fromkeys(
-            entities + [pn for pn in proper_nouns if pn.lower() not in cls.STOPWORDS and len(pn) > 2]
-        ))
-
-        # 2. Extract salient keywords (excluding stopwords)
-        words = [w for w in clean_claim.split() if w.lower() not in cls.STOPWORDS and len(w) > 2]
-        keyword_summary = " ".join(words[:8])
-
-        queries = []
-
-        # Query 1: Primary entity + key action & number (e.g. Dow Jones falls 1600 points)
-        entity_words_lower = set(" ".join(entity_parts).lower().split())
-        non_entity_words = [w for w in words if w.lower() not in entity_words_lower]
         
-        q1_terms = list(dict.fromkeys(entity_parts[:1] + non_entity_words[:3]))
-        if q1_terms:
-            queries.append(" ".join(q1_terms))
+        valid_nouns = list(dict.fromkeys([
+            pn for pn in (proper_nouns + entities) 
+            if pn.lower() not in cls.STOPWORDS and len(pn) > 2 and not cls.OCR_NOISE_RE.match(pn)
+        ]))
 
-        # Query 2: All entities + market/event key verbs (e.g. Dow Jones Nvidia futures rebound)
-        action_keys = [w for w in non_entity_words if w.lower() in (
-            "futures", "rebound", "results", "earnings", "falls", "drops", "sinks", "rallies", "confirmed", "launch", "tax"
-        )]
-        q2_terms = list(dict.fromkeys(entity_parts + (action_keys[:3] if action_keys else non_entity_words[:3])))
-        if q2_terms:
-            queries.append(" ".join(q2_terms))
+        all_clean_words = [
+            w for w in cls.OCR_NOISE_RE.sub(" ", raw).split() 
+            if w.lower() not in cls.STOPWORDS and len(w) > 2
+        ]
 
-        # Query 3: Entities + Numbers (e.g. Dow Jones 1600)
-        if numbers:
-            q3_terms = list(dict.fromkeys(entity_parts[:2] + numbers[:2]))
-            queries.append(" ".join(q3_terms))
+        if valid_nouns:
+            noun_words = []
+            for n in valid_nouns:
+                for w in n.split():
+                    w_clean = re.sub(r"[^\w]", "", w)
+                    if w_clean and w_clean.lower() not in cls.STOPWORDS and w_clean.lower() not in [nw.lower() for nw in noun_words]:
+                        noun_words.append(w_clean)
+            entity_q = " ".join(noun_words[:4])
+            if context_suffix and context_suffix.lower() not in entity_q.lower():
+                entity_q = f"{entity_q} {context_suffix}"
+            if entity_q and entity_q not in queries:
+                queries.append(entity_q)
 
-        # Query 4: Fact-Check targeted query
-        primary_entity = entity_parts[0] if entity_parts else words[0] if words else "claim"
-        queries.append(f"{primary_entity} {' '.join(non_entity_words[:3])} fact check".strip())
+        # Simplified core query (max 5 keywords)
+        if all_clean_words:
+            core_words = []
+            for w in all_clean_words:
+                w_clean = re.sub(r"[^\w]", "", w)
+                if w_clean and w_clean.lower() not in cls.STOPWORDS and w_clean.lower() not in [cw.lower() for cw in core_words]:
+                    core_words.append(w_clean)
+            core_q = " ".join(core_words[:5])
+            if context_suffix and context_suffix.lower() not in core_q.lower():
+                core_q = f"{core_q} {context_suffix}"
+            if core_q and core_q not in queries:
+                queries.append(core_q)
 
-        # Query 5: Multi-stance contradicting inquiry (debunk / false / denial)
-        queries.append(f"{primary_entity} false inaccurate debunk {' '.join(non_entity_words[:3])}".strip())
-
-        # Query 6: Supporting verification inquiry (official records / confirmation)
-        queries.append(f"{primary_entity} official statement confirmed".strip())
-
-        # Deduplicate while preserving order
-        unique_queries = []
+        # Deduplicate while preserving order and limit to 4 highest-quality queries
+        final_queries = []
         for q in queries:
-            q_clean = re.sub(r"\s+", " ", q).strip()
-            if q_clean and q_clean not in unique_queries:
-                unique_queries.append(q_clean)
+            clean_q = re.sub(r"\s+", " ", q).strip()
+            if clean_q and clean_q not in final_queries:
+                final_queries.append(clean_q)
 
-        return unique_queries[:2]
+        return final_queries[:4]
 
 generate_search_queries = QueryGenerator.generate_queries
-
