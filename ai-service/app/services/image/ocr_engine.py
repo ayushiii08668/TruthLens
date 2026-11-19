@@ -356,13 +356,6 @@ class ImageOCREngine:
                     if not cls._is_filename_like(val):
                         extracted_text_chunks.append(val.strip())
 
-        # Fast local RapidOCR attempt
-        rapid_data = cls._run_rapid_ocr(image_bytes)
-        if rapid_data.get("headline"):
-            extracted_text_chunks.append(rapid_data["headline"])
-        elif rapid_data.get("all_text"):
-            extracted_text_chunks.append(rapid_data["all_text"])
-
         # If caller passed caption_hint (e.g. user submitted claim accompanying the image)
         if caption_hint and len(caption_hint.strip()) > 5 and not cls._is_filename_like(caption_hint):
             extracted_text_chunks.append(caption_hint.strip())

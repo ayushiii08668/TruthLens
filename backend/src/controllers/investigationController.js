@@ -135,8 +135,10 @@ const createInvestigation = async (req, res, next) => {
           }
         };
         // If image OCR or headline was extracted and no manual caption was given, update originalInput
-        if (aiPipelineResult.ocr_text && isFilenameLike(originalInput)) {
-          originalInput = aiPipelineResult.ocr_text;
+        const detectedClaim = aiPipelineResult.ocr_text 
+          || (aiPipelineResult.claims_verified && aiPipelineResult.claims_verified[0] && aiPipelineResult.claims_verified[0].claim);
+        if (detectedClaim && isFilenameLike(originalInput)) {
+          originalInput = detectedClaim;
           investigation.originalInput = originalInput;
         }
       } else if (inputType === 'text' && (originalInput.length > 250 || req.body.isArticle)) {
